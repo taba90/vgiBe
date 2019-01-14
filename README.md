@@ -1,2 +1,0 @@
-# vgiBe
-vgi back-end
