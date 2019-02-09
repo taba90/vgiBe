@@ -36,7 +36,7 @@ public class VgiUser extends AbstractEntity{
 	private List<UserLocation> locations;
 	
 	@JsonIgnore
-	@ManyToMany(fetch=FetchType.LAZY)
+	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(
 			   name="Users_Roles",
 			   joinColumns=@JoinColumn(name="User_id", referencedColumnName="long_id"),

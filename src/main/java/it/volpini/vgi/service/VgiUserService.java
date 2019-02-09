@@ -1,5 +1,6 @@
 package it.volpini.vgi.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +49,13 @@ public class VgiUserService {
 				user.setPassword(pwdCrypted);
 				user.setEnabled(true);
 				RoleUser role=roleService.findByRoleName(RoleUserService.ROLE_USER);
+				if(user.getRuoli()!=null) {
 				user.getRuoli().add(role);
+				}else {
+					List<RoleUser> ruoli = new ArrayList<RoleUser>();
+					ruoli.add(role);
+					user.setRuoli(ruoli);
+				}
 				save(user);
 				esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
 			} else {

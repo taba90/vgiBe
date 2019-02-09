@@ -22,6 +22,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.volpini.vgi.domain.VgiUser;
+import it.volpini.vgi.general.CostantiVgi;
 
 public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 	
@@ -58,7 +59,7 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
             HttpServletResponse res,
             FilterChain chain,
             Authentication auth) throws IOException, ServletException {
-        Algorithm algorithm = Algorithm.HMAC256("1234567889900");
+        Algorithm algorithm = Algorithm.HMAC256(CostantiVgi.SECRET);
         String token = JWT.create()
                 .withIssuer("login")
                 .withClaim("subject", auth.getName())

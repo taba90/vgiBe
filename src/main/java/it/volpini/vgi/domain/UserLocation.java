@@ -1,5 +1,7 @@
 package it.volpini.vgi.domain;
 
+import java.util.ArrayList;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -21,12 +23,17 @@ public class UserLocation extends AbstractEntity{
 	@Column(columnDefinition = "TEXT")
 	private String descrizione;
 	
+	private Float longitude;
+	
+	private Float latitude;
+	
 	@JsonSerialize(using = GeometrySerializer.class)
     @JsonDeserialize(contentUsing = GeometryDeserializer.class)
 	private Point location;
 	
-	private String codiceLegenda;
-	
+    @ManyToOne
+	private Legenda legenda;
+    
 	@ManyToOne
 	private VgiUser vgiUser;
 	
@@ -50,6 +57,9 @@ public class UserLocation extends AbstractEntity{
 
 	public void setVgiUser(VgiUser vgiUser) {
 		this.vgiUser = vgiUser;
+		if(vgiUser.getLocations()==null) {
+			vgiUser.setLocations(new ArrayList<UserLocation>());
+		}
 		vgiUser.getLocations().add(this);
 	}
 
@@ -78,12 +88,29 @@ public class UserLocation extends AbstractEntity{
 		ghostUser.getLocations().add(this);
 	}
 
-	public String getCodiceLegenda() {
-		return codiceLegenda;
+	public Legenda getLegenda() {
+		return legenda;
 	}
 
-	public void setCodiceLegenda(String codiceLegenda) {
-		this.codiceLegenda = codiceLegenda;
+	public void setLegenda(Legenda legenda) {
+		this.legenda = legenda;
+		legenda.getUserLocations().add(this);
+	}
+
+	public Float getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Float longitude) {
+		this.longitude = longitude;
+	}
+
+	public Float getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Float latitude) {
+		this.latitude = latitude;
 	}
 	
 	

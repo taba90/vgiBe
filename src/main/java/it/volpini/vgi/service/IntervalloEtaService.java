@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import it.volpini.vgi.dao.IntervalloEtaDao;
 import it.volpini.vgi.domain.IntervalloEta;
@@ -12,7 +13,9 @@ import it.volpini.vgi.general.CostantiVgi;
 import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.general.Result;
 
+
 @Service
+@Transactional
 public class IntervalloEtaService {
 	
 	@Autowired

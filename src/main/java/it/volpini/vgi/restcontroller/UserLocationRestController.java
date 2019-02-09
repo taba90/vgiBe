@@ -30,11 +30,11 @@ public class UserLocationRestController {
 	@Autowired
 	private VgiUserService userService;
 	
-	@PostMapping("/new")
-	public Result<UserLocation> newLocation(@RequestBody UserLocation location){
+	@PostMapping("{idLegenda}/new")
+	public Result<UserLocation> newLocation(@RequestBody UserLocation location, @PathVariable Long idLegenda){
 		Optional<UserLocation> opLoc=Optional.ofNullable(location);
 		Optional<Long> opIdAuth=userService.getIdAuthenticatedUser();
-		return locationService.saveLocation(opLoc, opIdAuth);
+		return locationService.saveLocation(opLoc, opIdAuth, idLegenda);
 	}
 	
 	@GetMapping("/search")

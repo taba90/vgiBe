@@ -36,6 +36,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
                 .and().authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/register").anonymous()
+                .antMatchers("/model").anonymous()
+                .antMatchers("/legenda/findAll").permitAll()
+                .antMatchers("/location/new").permitAll()
                 .antMatchers(HttpMethod.POST, "/login").anonymous()
                 .antMatchers("/user/delete").hasRole("ADMIN")
                 .antMatchers("/place/addOwner").hasRole("OWNER")
@@ -46,7 +49,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
                         "/estate/getEstateOffer", "/estate", "/image/uploadImage", "/user/addImgUser").authenticated()
                 .antMatchers("/product/**", "/place/**", "/user/**", "/place/my", "/offer/**","/estate/**", "/image/**").hasAnyRole("ADMIN", "OWNER")
                 .anyRequest().authenticated()
-                .and().addFilterBefore(new JWTAuthenticationFilter("/user/login", authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+                .and().addFilterBefore(new JWTAuthenticationFilter("/login", authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTAuthorizationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .logout().logoutUrl("/user/logout").logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.ACCEPTED)).permitAll();
 
@@ -75,7 +78,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
         config.setAllowCredentials(true);
         config.addAllowedOrigin("*");
         config.addAllowedHeader("*");
-        config.addExposedHeader("X-Jwt");
+        config.addExposedHeader("X-Vgi");
         config.addAllowedMethod("OPTIONS");
         config.addAllowedMethod("GET");
         config.addAllowedMethod("PUT");

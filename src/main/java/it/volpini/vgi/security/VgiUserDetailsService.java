@@ -11,12 +11,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import it.volpini.vgi.domain.VgiUser;
 import it.volpini.vgi.domain.RoleUser;
 import it.volpini.vgi.service.VgiUserService;
 
 @Service
+@Transactional
 public class VgiUserDetailsService implements UserDetailsService{
 
 	@Autowired

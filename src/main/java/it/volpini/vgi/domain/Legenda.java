@@ -1,8 +1,14 @@
 package it.volpini.vgi.domain;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Entity
@@ -15,6 +21,10 @@ public class Legenda extends AbstractEntity{
 	private String descrizione;
 	
 	private boolean active;
+	
+	@JsonIgnore
+	@OneToMany(fetch=FetchType.LAZY, mappedBy="legenda")
+	private List<UserLocation> userLocations;
 	
 	public Legenda(Long id) {
 		this.id=id;
@@ -47,4 +57,14 @@ public class Legenda extends AbstractEntity{
 	public void setActive(boolean active) {
 		this.active = active;
 	}
+
+	public List<UserLocation> getUserLocations() {
+		return userLocations;
+	}
+
+	public void setUserLocations(List<UserLocation> userLocations) {
+		this.userLocations = userLocations;
+	}
+	
+	
 }

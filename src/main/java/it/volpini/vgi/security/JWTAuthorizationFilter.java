@@ -50,10 +50,10 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest req,
             HttpServletResponse res,
             FilterChain chain) throws IOException, ServletException {
-        if (req.getHeader("X-Jwt") == null) {
+        if (req.getHeader("X-Vgi") == null) {
             chain.doFilter(req, res);
         } else {
-            Optional<String> optoken = Optional.ofNullable(req.getHeader("X-Jwt"));
+            Optional<String> optoken = Optional.ofNullable(req.getHeader("X-Vgi"));
             UsernamePasswordAuthenticationToken authentication = getAuthentication(optoken, req);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -71,11 +71,12 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         }
     	Optional<DecodedJWT> optJwt=optoken.map(t->JWT.require(Algorithm.HMAC256(CostantiVgi.SECRET)).withIssuer(CostantiVgi.LONGIN_ISSUE).build().verify(t));
     	Optional<VgiUser> opU=optJwt.map(jwt->userService.findByUsername(jwt.getClaim("subject").asString()));
-        Set<GrantedAuthority> authorities = new HashSet<>();
-        opU.ifPresent(u->u.getRuoli().forEach(r->{
-        authorities.add(new SimpleGrantedAuthority(r.toString()));}));
-        if(opU.isPresent()){
-        	authtoken = new UsernamePasswordAuthenticationToken(opU.get().getUsername(), null, authorities);
+        if(opU.isPresent()) {
+        	VgiUser u = opU.get();
+        	Set<GrantedAuthority> authorities = new HashSet<>();
+        	u.getRuoli().forEach(r->{
+                authorities.add(new SimpleGrantedAuthority(r.toString()));});
+                authtoken = new UsernamePasswordAuthenticationToken(opU.get().getUsername(), null, authorities);
         }
         return authtoken;
     }

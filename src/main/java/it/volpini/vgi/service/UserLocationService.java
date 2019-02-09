@@ -3,18 +3,23 @@ package it.volpini.vgi.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 
 import it.volpini.vgi.dao.UserLocationDao;
+import it.volpini.vgi.domain.Legenda;
 import it.volpini.vgi.domain.UserLocation;
 import it.volpini.vgi.domain.VgiUser;
 import it.volpini.vgi.general.CostantiVgi;
 import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.general.Result;
+import it.volpini.vgi.utils.GeometryUtils;
 
 @Service
 @Transactional
@@ -22,6 +27,9 @@ public class UserLocationService {
 	
 	@Autowired
 	private UserLocationDao userLocationDao;
+	
+	@Autowired
+	private GeometryUtils geomUtils;
 	
 	public UserLocation saveOrUpdate(UserLocation userLocation) {
 		return userLocationDao.save(userLocation);
@@ -43,11 +51,16 @@ public class UserLocationService {
 		return userLocationDao.findByVgiUser_id(id);
 	}
 	
-	public Result<UserLocation> saveLocation(Optional<UserLocation> oplocation, Optional<Long> opIdUser) {
+	public Result<UserLocation> saveLocation(Optional<UserLocation> oplocation, Optional<Long> opIdUser, Long idLegenda) {
 		Result<UserLocation> result = new Result<>();
 		Esito esito;
 		if (oplocation.isPresent()) {
 			UserLocation location = oplocation.get();
+			Legenda legenda = new Legenda();
+			legenda.setId(idLegenda);
+			Point point = geomUtils.getPoint(location.getLongitude(), location.getLatitude());
+			point.setSRID(3857);
+			location.setLocation(point);
 			if (opIdUser.isPresent()) {
 				location.setVgiUser(new VgiUser(opIdUser.get()));
 				saveOrUpdate(location);
@@ -124,7 +137,5 @@ public class UserLocationService {
 		result.setEsito(esito);
 		return result;
 	}
-	
-	
 
 }
