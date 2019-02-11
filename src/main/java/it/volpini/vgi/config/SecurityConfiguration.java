@@ -39,6 +39,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
                 .antMatchers("/model").anonymous()
                 .antMatchers("/legenda/findAll").permitAll()
                 .antMatchers("/location/new").permitAll()
+                .antMatchers("/location/user").permitAll()
                 .antMatchers(HttpMethod.POST, "/login").anonymous()
                 .antMatchers("/user/delete").hasRole("ADMIN")
                 .antMatchers("/place/addOwner").hasRole("OWNER")

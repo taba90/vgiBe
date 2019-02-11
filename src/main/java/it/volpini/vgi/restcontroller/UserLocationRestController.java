@@ -57,4 +57,10 @@ public class UserLocationRestController {
 		Optional<Long> opId=Optional.ofNullable(idLoc);
 		return locationService.deleteLocation(opId);
 	}
+	
+	@GetMapping("/user")
+	public Result<UserLocation> getUserLocations(){
+		Optional<Long> opIdAuth=userService.getIdAuthenticatedUser();
+		return locationService.getUserLocations(opIdAuth);
+	}
 }

@@ -3,8 +3,6 @@ package it.volpini.vgi.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -137,5 +135,29 @@ public class UserLocationService {
 		result.setEsito(esito);
 		return result;
 	}
+	
+	public Result<UserLocation> getUserLocations(Optional<Long> idUser) {
+		Result<UserLocation> result = new Result<UserLocation>();
+		Esito esito;
+		try {
+			if (idUser.isPresent()) {
+				List<UserLocation> userlocations = findByIdUser(idUser.get());
+				if (userlocations != null && userlocations.size() > 0) {
+					result.setResults(userlocations);
+					esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
+				} else {
+					esito = new Esito(CostantiVgi.CODICE_OK_RESULT_NULL, CostantiVgi.DESCR_OK_RESULT_NULL);
+				}
+			} else {
+				esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE);
+			}
+		} catch (Throwable t) {
+			t.printStackTrace();
+			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + t.getMessage());
+		}
+		result.setEsito(esito);
+		return result;
+	}
+	
 
 }
