@@ -65,7 +65,6 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
                 .withClaim("subject", auth.getName())
                 .sign(algorithm);
         res.addHeader("X-Vgi", token);
-
     }
 
     @Override

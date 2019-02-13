@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -31,7 +32,7 @@ public class UserLocation extends AbstractEntity{
     @JsonDeserialize(contentUsing = GeometryDeserializer.class)
 	private Point location;
 	
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.EAGER)
 	private Legenda legenda;
     
 	@ManyToOne

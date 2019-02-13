@@ -22,6 +22,8 @@ public class Legenda extends AbstractEntity{
 	
 	private boolean active;
 	
+	private String colore;
+	
 	@JsonIgnore
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="legenda")
 	private List<UserLocation> userLocations;
@@ -48,6 +50,14 @@ public class Legenda extends AbstractEntity{
 
 	public void setDescrizione(String descrizione) {
 		this.descrizione = descrizione;
+	}
+
+	public String getColore() {
+		return colore;
+	}
+
+	public void setColore(String colore) {
+		this.colore = colore;
 	}
 
 	public boolean isActive() {
