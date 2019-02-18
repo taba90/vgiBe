@@ -49,6 +49,10 @@ public class UserLocationService {
 		return userLocationDao.findByVgiUser_id(id);
 	}
 	
+	public List<UserLocation> findByUserAndLegenda (Long idUser, Long idLegenda){
+		return userLocationDao.findByVgiUser_idAndLegenda_id(idUser, idLegenda);
+	}
+	
 	public Result<UserLocation> saveLocation(Optional<UserLocation> oplocation, Optional<Long> opIdUser, Long idLegenda) {
 		Result<UserLocation> result = new Result<>();
 		Esito esito;
@@ -58,6 +62,7 @@ public class UserLocationService {
 			legenda.setId(idLegenda);
 			Point point = geomUtils.getPoint(location.getLongitude(), location.getLatitude());
 			point.setSRID(3857);
+			location.setLegenda(legenda);
 			location.setLocation(point);
 			if (opIdUser.isPresent()) {
 				location.setVgiUser(new VgiUser(opIdUser.get()));
@@ -142,6 +147,29 @@ public class UserLocationService {
 		try {
 			if (idUser.isPresent()) {
 				List<UserLocation> userlocations = findByIdUser(idUser.get());
+				if (userlocations != null && userlocations.size() > 0) {
+					result.setResults(userlocations);
+					esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
+				} else {
+					esito = new Esito(CostantiVgi.CODICE_OK_RESULT_NULL, CostantiVgi.DESCR_OK_RESULT_NULL);
+				}
+			} else {
+				esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE);
+			}
+		} catch (Throwable t) {
+			t.printStackTrace();
+			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + t.getMessage());
+		}
+		result.setEsito(esito);
+		return result;
+	}
+	
+	public Result<UserLocation> getUserLocationsByLegenda(Optional<Long> idUser, Optional<Long> idLegenda) {
+		Result<UserLocation> result = new Result<UserLocation>();
+		Esito esito;
+		try {
+			if (idUser.isPresent() && idLegenda.isPresent()) {
+				List<UserLocation> userlocations = findByUserAndLegenda(idUser.get(), idLegenda.get());
 				if (userlocations != null && userlocations.size() > 0) {
 					result.setResults(userlocations);
 					esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);

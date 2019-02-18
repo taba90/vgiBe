@@ -14,5 +14,7 @@ public interface UserLocationDao extends JpaRepository<UserLocation, Long>, Cust
 	
 	
 	public List<UserLocation> findByVgiUser_id(Long id);
+	
+	public List<UserLocation> findByVgiUser_idAndLegenda_id(Long idUser, Long idLegenda);
 
 }

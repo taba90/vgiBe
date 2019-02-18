@@ -63,4 +63,11 @@ public class UserLocationRestController {
 		Optional<Long> opIdAuth=userService.getIdAuthenticatedUser();
 		return locationService.getUserLocations(opIdAuth);
 	}
+	
+	@GetMapping("/{idLegenda}/user")
+	public Result<UserLocation> getUserLocationsByIdLegenda(@PathVariable Long idLegenda){
+		Optional<Long> opIdAuth=userService.getIdAuthenticatedUser();
+		Optional<Long> opIdLegenda = Optional.ofNullable(idLegenda);
+		return locationService.getUserLocationsByLegenda(opIdAuth, opIdLegenda);
+	}
 }

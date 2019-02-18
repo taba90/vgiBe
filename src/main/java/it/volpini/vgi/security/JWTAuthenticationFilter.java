@@ -1,6 +1,7 @@
 package it.volpini.vgi.security;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Optional;
 
 import javax.servlet.FilterChain;
@@ -63,6 +64,7 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
         String token = JWT.create()
                 .withIssuer("login")
                 .withClaim("subject", auth.getName())
+                .withExpiresAt(new Date(System.currentTimeMillis() + (120 * 60 * 1000)))
                 .sign(algorithm);
         res.addHeader("X-Vgi", token);
     }

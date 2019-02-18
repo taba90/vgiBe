@@ -95,6 +95,9 @@ public class UserLocation extends AbstractEntity{
 
 	public void setLegenda(Legenda legenda) {
 		this.legenda = legenda;
+		if(legenda.getUserLocations()==null) {
+			legenda.setUserLocations(new ArrayList<UserLocation>());
+		}
 		legenda.getUserLocations().add(this);
 	}
 
