@@ -27,8 +27,9 @@ public class IntervalloEtaRestController {
 		return intervalloService.save(oIe);
 	}
 	
-	@PatchMapping("/update")
-	public Result<IntervalloEta> update (@RequestBody IntervalloEta ie) {
+	@PatchMapping("/{idIntervallo}")
+	public Result<IntervalloEta> update (@RequestBody IntervalloEta ie, Long idIntervallo) {
+		ie.setId(idIntervallo);
 		Optional<IntervalloEta> oIe=Optional.ofNullable(ie);
 		return intervalloService.update(oIe);
 	}

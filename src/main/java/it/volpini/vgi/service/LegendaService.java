@@ -55,6 +55,24 @@ public class LegendaService {
 		return result;
 	}
 	
+	public Result<Legenda> delete(Optional<Long> idLegenda) {
+		Result<Legenda> result = new Result<>();
+		Esito esito;
+		try {
+			if (idLegenda.isPresent()) {
+				delete(idLegenda.get());
+				esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
+			} else {
+				esito = new Esito(CostantiVgi.CODICE_OK_RESULT_NULL,
+						CostantiVgi.DESCR_OK_RESULT_NULL+": non è stato passata nessuna legenda da eliminare");
+			}
+		} catch (Throwable t) {
+			esito=new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE+t.getMessage());
+		}
+		result.setEsito(esito);
+		return result;
+	}
+	
 	public Result<Legenda> findAllLegenda(){
 		Result<Legenda> result=new Result<>();
 		Esito esito;

@@ -41,7 +41,7 @@ public class VgiUserRestController {
 		return userService.saveUser(opuser);
 	}
 	
-	@DeleteMapping("/selfDelete")
+	@DeleteMapping("/self")
 	public Result<VgiUser> deleteUser(){
 		return userService.selfDeleteUser();
 	}
