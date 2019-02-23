@@ -187,5 +187,26 @@ public class UserLocationService {
 		return result;
 	}
 	
+	
+	public Result<UserLocation> getUserLocationsById(Long idLocation) {
+		Result<UserLocation> result = new Result<UserLocation>();
+		Esito esito;
+		try {
+			Optional<UserLocation> location = findById(idLocation);
+			if (location.isPresent()) {
+				result.setResult(location.get());
+				esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
+			} else {
+				esito = new Esito(CostantiVgi.CODICE_OK_RESULT_NULL, CostantiVgi.DESCR_OK_RESULT_NULL);
+			}
+
+		} catch (Throwable t) {
+			t.printStackTrace();
+			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + t.getMessage());
+		}
+		result.setEsito(esito);
+		return result;
+	}
+	
 
 }

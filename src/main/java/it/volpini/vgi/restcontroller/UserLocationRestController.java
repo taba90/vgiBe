@@ -52,7 +52,7 @@ public class UserLocationRestController {
 		return locationService.update(opLoc);
 	}
 	
-	@DeleteMapping("/{idLoc}/delete")
+	@DeleteMapping("/{idLoc}")
 	public Result<UserLocation> delete(@PathVariable Long idLoc){
 		Optional<Long> opId=Optional.ofNullable(idLoc);
 		return locationService.deleteLocation(opId);
@@ -69,5 +69,10 @@ public class UserLocationRestController {
 		Optional<Long> opIdAuth=userService.getIdAuthenticatedUser();
 		Optional<Long> opIdLegenda = Optional.ofNullable(idLegenda);
 		return locationService.getUserLocationsByLegenda(opIdAuth, opIdLegenda);
+	}
+	
+	@GetMapping("/{idLocation}")
+	public Result<UserLocation> getUserLocationById(@PathVariable Long idLocation){
+		return locationService.getUserLocationsById(idLocation);
 	}
 }

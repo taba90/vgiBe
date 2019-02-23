@@ -24,6 +24,8 @@ public class UserLocation extends AbstractEntity{
 	@Column(columnDefinition = "TEXT")
 	private String descrizione;
 	
+	private String nome;
+	
 	private Float longitude;
 	
 	private Float latitude;
@@ -116,6 +118,24 @@ public class UserLocation extends AbstractEntity{
 	public void setLatitude(Float latitude) {
 		this.latitude = latitude;
 	}
+
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	public GhostUser getGhostUser() {
+		return ghostUser;
+	}
+
+	public void setGhostUser(GhostUser ghostUser) {
+		this.ghostUser = ghostUser;
+	}
+	
+	
 	
 	
 
