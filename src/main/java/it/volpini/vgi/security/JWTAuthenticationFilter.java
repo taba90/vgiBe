@@ -44,7 +44,7 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     user.getUsername(), user.getPassword());
-
+            
             Authentication authentication = opAuthMan.get().authenticate(authenticationToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 

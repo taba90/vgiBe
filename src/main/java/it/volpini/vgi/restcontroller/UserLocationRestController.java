@@ -46,7 +46,7 @@ public class UserLocationRestController {
 		return locationService.searchLocation(opInterval, idLegOp, opGeom);
 	}
 	
-	@PatchMapping("/update")
+	@PatchMapping()
 	public Result<UserLocation> udpate(@RequestBody UserLocation location){
 		Optional<UserLocation> opLoc=Optional.ofNullable(location);
 		return locationService.update(opLoc);

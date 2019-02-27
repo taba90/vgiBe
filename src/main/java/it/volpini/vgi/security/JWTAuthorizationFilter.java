@@ -8,6 +8,7 @@ package it.volpini.vgi.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import it.volpini.vgi.domain.VgiUser;
@@ -53,11 +54,15 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         if (req.getHeader("X-Vgi") == null) {
             chain.doFilter(req, res);
         } else {
+        	try {
             Optional<String> optoken = Optional.ofNullable(req.getHeader("X-Vgi"));
             UsernamePasswordAuthenticationToken authentication = getAuthentication(optoken, req);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             chain.doFilter(req, res);
+        	}catch(TokenExpiredException tee) {
+        		res.setHeader(CostantiVgi.TOKEN_EXPIRED_KEY, "Sessione scaduta rieseguire login");
+        	}
         }
     }
 

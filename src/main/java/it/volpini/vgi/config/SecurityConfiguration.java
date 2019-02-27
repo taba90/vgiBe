@@ -36,23 +36,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
                 .and().authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/register").anonymous()
-                .antMatchers("/model").anonymous()
                 .antMatchers("/legenda/findAll").permitAll()
                 .antMatchers("/location/new").permitAll()
                 .antMatchers("/location/user").permitAll()
                 .antMatchers(HttpMethod.POST, "/login").anonymous()
-                .antMatchers("/user/delete").hasRole("ADMIN")
-                .antMatchers("/place/addOwner").hasRole("OWNER")
-                .antMatchers("/user/loggedUser", "product/findShops", "product/getCategories", 
-                        "/place/{id}/offers", "/userLocation/**", "/user/createUserLocation", 
-                        "/user/getAvailableUsers", "/user/updateUserLocation", 
-                        "/user/deleteUserLocation", "/product/reserveOffer", "/product/list",
-                        "/estate/getEstateOffer", "/estate", "/image/uploadImage", "/user/addImgUser").authenticated()
-                .antMatchers("/product/**", "/place/**", "/user/**", "/place/my", "/offer/**","/estate/**", "/image/**").hasAnyRole("ADMIN", "OWNER")
-                .anyRequest().authenticated()
                 .and().addFilterBefore(new JWTAuthenticationFilter("/login", authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTAuthorizationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
-                .logout().logoutUrl("/user/logout").logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.ACCEPTED)).permitAll();
+                .logout().logoutUrl("/logout").logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.ACCEPTED)).permitAll();
 
     }
 
