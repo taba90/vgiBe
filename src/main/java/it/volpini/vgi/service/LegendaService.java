@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import it.volpini.vgi.dao.LegendaDao;
+import it.volpini.vgi.dao.UserLocationDao;
 import it.volpini.vgi.domain.Legenda;
+import it.volpini.vgi.domain.UserLocation;
 import it.volpini.vgi.general.CostantiVgi;
 import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.general.Result;
@@ -20,6 +22,9 @@ public class LegendaService {
 	
 	@Autowired
 	private LegendaDao legendaDao;
+	
+	@Autowired
+	private UserLocationDao locationDao;
 	
 	public Legenda save(Legenda legenda) {
 		return legendaDao.save(legenda);
@@ -60,8 +65,13 @@ public class LegendaService {
 		Esito esito;
 		try {
 			if (idLegenda.isPresent()) {
-				delete(idLegenda.get());
-				esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
+				Optional<UserLocation> location =locationDao.findTop1ByLegenda_id(idLegenda.get());
+				if(!location.isPresent()) {
+					delete(idLegenda.get());
+					esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
+				}else {
+					esito = new Esito(CostantiVgi.CODICE_OK_RESULT_NULL, "Almento un punto è associato a questa voce di legenda non è possibile eliminarla");
+				}
 			} else {
 				esito = new Esito(CostantiVgi.CODICE_OK_RESULT_NULL,
 						CostantiVgi.DESCR_OK_RESULT_NULL+": non è stato passata nessuna legenda da eliminare");

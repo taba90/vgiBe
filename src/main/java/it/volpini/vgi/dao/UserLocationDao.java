@@ -2,6 +2,7 @@ package it.volpini.vgi.dao;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -16,5 +17,7 @@ public interface UserLocationDao extends JpaRepository<UserLocation, Long>, Cust
 	public List<UserLocation> findByVgiUser_id(Long id);
 	
 	public List<UserLocation> findByVgiUser_idAndLegenda_id(Long idUser, Long idLegenda);
+	
+	public Optional<UserLocation> findTop1ByLegenda_id(Long idLegenda);
 
 }

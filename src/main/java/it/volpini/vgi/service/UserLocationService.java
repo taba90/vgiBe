@@ -56,6 +56,7 @@ public class UserLocationService {
 	public Result<UserLocation> saveLocation(Optional<UserLocation> oplocation, Optional<Long> opIdUser, Long idLegenda) {
 		Result<UserLocation> result = new Result<>();
 		Esito esito;
+		try {
 		if (oplocation.isPresent()) {
 			UserLocation location = oplocation.get();
 			Legenda legenda = new Legenda();
@@ -75,6 +76,11 @@ public class UserLocationService {
 		} else {
 			esito = new Esito(CostantiVgi.CODICE_ERRORE,
 					CostantiVgi.DESCR_ERRORE + " impossibile recuperare la posizione inviata");
+		}
+		}catch (Throwable t) {
+			t.printStackTrace();
+			esito = new Esito(CostantiVgi.CODICE_ERRORE,
+					CostantiVgi.DESCR_ERRORE +t.getMessage());
 		}
 		result.setEsito(esito);
 		return result;
@@ -101,6 +107,7 @@ public class UserLocationService {
 				esito = new Esito(CostantiVgi.CODICE_OK_RESULT_NULL, CostantiVgi.DESCR_OK_RESULT_NULL);
 			}
 		} catch (Throwable t) {
+			t.printStackTrace();
 			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + t.getMessage());
 		}
 		result.setEsito(esito);
@@ -135,7 +142,9 @@ public class UserLocationService {
 			esito= new Esito(CostantiVgi.CODICE_OK_RESULT_NULL, CostantiVgi.DESCR_OK_RESULT_NULL+": nessuna localizzazione è stata passata per la cancellazione");
 		}
 		}catch(Throwable t) {
-			esito=new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE);
+			t.printStackTrace();
+			esito = new Esito(CostantiVgi.CODICE_ERRORE,
+					CostantiVgi.DESCR_ERRORE +t.getMessage());
 		}
 		result.setEsito(esito);
 		return result;
