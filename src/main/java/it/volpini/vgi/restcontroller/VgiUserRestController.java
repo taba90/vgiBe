@@ -49,8 +49,14 @@ public class VgiUserRestController {
 	}
 	
 	@DeleteMapping("/self")
-	public Esito deleteUser() throws UserNotInSessionException, ElementNotFoundException{
+	public Esito deleteSelfUser() throws UserNotInSessionException, ElementNotFoundException{
 		return userService.selfDeleteUser();
+	}
+	
+	@GetMapping("/self")
+	public VgiUser getSelfUser() throws UserNotInSessionException, ElementNotFoundException{
+		Optional<Long> idAuth = userService.getIdAuthenticatedUser();
+		return userService.getSelf(idAuth.orElseThrow(()-> new UserNotInSessionException("L'utente che ha fatto la richiesta non è in session")));
 	}
 	
 	@PatchMapping("/update")

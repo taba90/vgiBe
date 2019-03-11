@@ -45,7 +45,6 @@ public class VgiUserService {
 				.orElseThrow(() -> new NullParamException("Uno o più parametri non sono presenti nella request"));
 		String pwdCrypted = pwdEncoder.encode(user.getPassword());
 		user.setPassword(pwdCrypted);
-		user.setEnabled(true);
 		RoleUser role = roleService.findByRoleName(RoleUserService.ROLE_USER);
 		if (user.getRuoli() != null) {
 			user.getRuoli().add(role);
@@ -73,6 +72,11 @@ public class VgiUserService {
 	
 	public VgiUser findByUsername(String username){
 		return vgiUserDao.findByUsernameIgnoreCase(username);
+	}
+	
+	public VgiUser getSelf(Long idUser) throws ElementNotFoundException{
+		return vgiUserDao.findById(idUser).orElseThrow(
+				()->new ElementNotFoundException("Non ho trovato l'elemento indicato"));
 	}
 	
 	public List<VgiUser> findAll(){

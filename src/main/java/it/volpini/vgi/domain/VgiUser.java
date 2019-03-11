@@ -22,14 +22,8 @@ public class VgiUser extends AbstractEntity{
 	
 	private String email;
 	
-	private String nome;
-	
-	private String cognome;
-	
 	private Integer anni;
-	
-	private boolean enabled=false;
-	
+		
 	@JsonIgnore
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="vgiUser")
 	//@JoinColumn(name="user_id", referencedColumnName="long_id", nullable= true)
@@ -81,22 +75,6 @@ public class VgiUser extends AbstractEntity{
 		this.email = email;
 	}
 
-	public String getNome() {
-		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
-	public String getCognome() {
-		return cognome;
-	}
-
-	public void setCognome(String cognome) {
-		this.cognome = cognome;
-	}
-
 	public Integer getAnni() {
 		return anni;
 	}
@@ -129,14 +107,6 @@ public class VgiUser extends AbstractEntity{
 	public void addRuolo(RoleUser role) {
 		this.getRuoli().add(role);
 		role.getUtenti().add(this);
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 	}
 
 }
