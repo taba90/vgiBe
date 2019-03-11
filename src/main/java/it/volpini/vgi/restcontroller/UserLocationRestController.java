@@ -1,5 +1,6 @@
 package it.volpini.vgi.restcontroller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vividsolutions.jts.geom.Geometry;
 
 import it.volpini.vgi.domain.UserLocation;
-import it.volpini.vgi.general.Result;
+import it.volpini.vgi.exceptions.LinkedElementsExistException;
+import it.volpini.vgi.exceptions.ElementNotFoundException;
+import it.volpini.vgi.exceptions.NullParamException;
+import it.volpini.vgi.exceptions.UserNotInSessionException;
+import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.service.UserLocationService;
 import it.volpini.vgi.service.VgiUserService;
 
@@ -31,14 +36,14 @@ public class UserLocationRestController {
 	private VgiUserService userService;
 	
 	@PostMapping("{idLegenda}/new")
-	public Result<UserLocation> newLocation(@RequestBody UserLocation location, @PathVariable Long idLegenda){
+	public UserLocation newLocation(@RequestBody UserLocation location, @PathVariable Long idLegenda) throws UserNotInSessionException, NullParamException{
 		Optional<UserLocation> opLoc=Optional.ofNullable(location);
 		Optional<Long> opIdAuth=userService.getIdAuthenticatedUser();
 		return locationService.saveLocation(opLoc, opIdAuth, idLegenda);
 	}
 	
 	@GetMapping("/search")
-	public Result<UserLocation> search(@RequestParam(value="intervalloAnni", required=false) String intervalloAnni, 
+	public List<UserLocation> search(@RequestParam(value="intervalloAnni", required=false) String intervalloAnni, 
 			@RequestParam(value="idLegenda", required=false) Long idLegenda, @RequestParam(value="geom", required=false) Geometry geom){
 		Optional<String> opInterval=Optional.ofNullable(intervalloAnni);
 		Optional<Long>idLegOp=Optional.ofNullable(idLegenda);
@@ -47,32 +52,30 @@ public class UserLocationRestController {
 	}
 	
 	@PatchMapping()
-	public Result<UserLocation> udpate(@RequestBody UserLocation location){
+	public UserLocation udpate(@RequestBody UserLocation location) throws NullParamException{
 		Optional<UserLocation> opLoc=Optional.ofNullable(location);
 		return locationService.update(opLoc);
 	}
 	
 	@DeleteMapping("/{idLoc}")
-	public Result<UserLocation> delete(@PathVariable Long idLoc){
-		Optional<Long> opId=Optional.ofNullable(idLoc);
-		return locationService.deleteLocation(opId);
+	public Esito delete(@PathVariable Long idLoc) throws LinkedElementsExistException{
+		return locationService.deleteLocation(idLoc);
 	}
 	
 	@GetMapping("/user")
-	public Result<UserLocation> getUserLocations(){
+	public List<UserLocation> getUserLocations() throws UserNotInSessionException{
 		Optional<Long> opIdAuth=userService.getIdAuthenticatedUser();
 		return locationService.getUserLocations(opIdAuth);
 	}
 	
 	@GetMapping("/{idLegenda}/user")
-	public Result<UserLocation> getUserLocationsByIdLegenda(@PathVariable Long idLegenda){
+	public List<UserLocation> getUserLocationsByIdLegenda(@PathVariable Long idLegenda) throws UserNotInSessionException{
 		Optional<Long> opIdAuth=userService.getIdAuthenticatedUser();
-		Optional<Long> opIdLegenda = Optional.ofNullable(idLegenda);
-		return locationService.getUserLocationsByLegenda(opIdAuth, opIdLegenda);
+		return locationService.getUserLocationsByLegenda(opIdAuth, idLegenda);
 	}
 	
 	@GetMapping("/{idLocation}")
-	public Result<UserLocation> getUserLocationById(@PathVariable Long idLocation){
-		return locationService.getUserLocationsById(idLocation);
+	public UserLocation getUserLocationById(@PathVariable Long idLocation) throws ElementNotFoundException{
+		return locationService.getUserLocationById(idLocation);
 	}
 }

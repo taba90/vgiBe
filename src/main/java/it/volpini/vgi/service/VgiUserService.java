@@ -18,9 +18,11 @@ import it.volpini.vgi.domain.GhostUser;
 import it.volpini.vgi.domain.RoleUser;
 import it.volpini.vgi.domain.UserLocation;
 import it.volpini.vgi.domain.VgiUser;
+import it.volpini.vgi.exceptions.ElementNotFoundException;
+import it.volpini.vgi.exceptions.NullParamException;
+import it.volpini.vgi.exceptions.UserNotInSessionException;
 import it.volpini.vgi.general.CostantiVgi;
 import it.volpini.vgi.general.Esito;
-import it.volpini.vgi.general.Result;
 
 @Service
 @Transactional
@@ -38,34 +40,22 @@ public class VgiUserService {
     private BCryptPasswordEncoder pwdEncoder;
 	
 	
-	public Result<VgiUser> saveUser(Optional<VgiUser> opuser) {
-		Result<VgiUser> result = new Result<>();
-		Esito esito;
-		VgiUser user = null;
-		try {
-			if (opuser.isPresent()) {
-				user = opuser.get();
-				String pwdCrypted = pwdEncoder.encode(user.getPassword());
-				user.setPassword(pwdCrypted);
-				user.setEnabled(true);
-				RoleUser role=roleService.findByRoleName(RoleUserService.ROLE_USER);
-				if(user.getRuoli()!=null) {
-				user.getRuoli().add(role);
-				}else {
-					List<RoleUser> ruoli = new ArrayList<RoleUser>();
-					ruoli.add(role);
-					user.setRuoli(ruoli);
-				}
-				save(user);
-				esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
-			} else {
-				esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE);
-			}
-		} catch (Throwable t) {
-			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + t.getMessage());
+	public Esito saveUser(Optional<VgiUser> opuser) throws NullParamException {
+		VgiUser user = opuser
+				.orElseThrow(() -> new NullParamException("Uno o più parametri non sono presenti nella request"));
+		String pwdCrypted = pwdEncoder.encode(user.getPassword());
+		user.setPassword(pwdCrypted);
+		user.setEnabled(true);
+		RoleUser role = roleService.findByRoleName(RoleUserService.ROLE_USER);
+		if (user.getRuoli() != null) {
+			user.getRuoli().add(role);
+		} else {
+			List<RoleUser> ruoli = new ArrayList<RoleUser>();
+			ruoli.add(role);
+			user.setRuoli(ruoli);
 		}
-		result.setEsito(esito);
-		return result;
+		save(user);
+		return new Esito(CostantiVgi.DESCR_OK, true);
 	}
 	
 	public Optional<Long> getIdAuthenticatedUser(){
@@ -93,38 +83,23 @@ public class VgiUserService {
 		vgiUserDao.deleteById(id);
 	}
 	
-	public Result<VgiUser> selfDeleteUser() {
-		Result<VgiUser> result = new Result<VgiUser>();
-		Esito esito;
-		try {
-			Optional<Long> id = getIdAuthenticatedUser();
-			if (id.isPresent()) {
-				Optional<VgiUser> vgiUser = findById(id.get());
-				GhostUser ghost = new GhostUser(vgiUser);
-				ghostDao.save(ghost);
-				Optional<Long> idGu = ghostDao.findGhostUserIdByUsername(ghost.getUsername());
-				if (idGu.isPresent()) {
-					ghost = new GhostUser(idGu.get());
-					List<UserLocation> locations = locationDao.findByVgiUser_id(vgiUser.get().getId());
-					for (UserLocation l : locations) {
-						l.setGosthUser(ghost);
-						l.setVgiUser(null);
-						locationDao.save(l);
-					}
-					esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
-				} else {
-					esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE
-							+ " non sono riuscito a recuperare l'id del record sostitutivo dell'utente");
-				}
-			} else {
-				esito = new Esito(CostantiVgi.CODICE_ERRORE,
-						CostantiVgi.DESCR_ERRORE + " non sono riuscito a recuperare l'id dell'utente da cancellare");
-			}
-		} catch (Exception e) {
-			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + e.getMessage());
+	public Esito selfDeleteUser() throws UserNotInSessionException, ElementNotFoundException {
+		Optional<Long> id = getIdAuthenticatedUser();
+		Optional<VgiUser> vgiUser = findById(
+				id.orElseThrow(() -> new UserNotInSessionException("L'utente non risulta essere in sessione")));
+		GhostUser ghost = new GhostUser(vgiUser);
+		ghostDao.save(ghost);
+		Optional<Long> idGu = ghostDao.findGhostUserIdByUsername(ghost.getUsername());
+		ghost = new GhostUser(
+				idGu.orElseThrow(() -> new ElementNotFoundException("Non ho trovato l'elemento indicato")));
+		List<UserLocation> locations = locationDao.findByVgiUser_id(vgiUser.get().getId());
+		for (UserLocation l : locations) {
+			l.setGosthUser(ghost);
+			l.setVgiUser(null);
+			locationDao.save(l);
 		}
-		result.setEsito(esito);
-		return result;
+		return new Esito(CostantiVgi.DESCR_OK, true);
+
 	}
 
 }

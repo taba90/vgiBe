@@ -32,6 +32,7 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.context.WebApplicationContext;
@@ -61,7 +62,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             chain.doFilter(req, res);
         	}catch(TokenExpiredException tee) {
-        		res.setHeader(CostantiVgi.TOKEN_EXPIRED_KEY, "Sessione scaduta rieseguire login");
+        		res.sendError(HttpServletResponse.SC_FORBIDDEN, "Sessione scaduta rieseguire la login");
         	}
         }
     }

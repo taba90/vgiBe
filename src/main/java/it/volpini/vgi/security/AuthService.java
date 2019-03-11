@@ -12,15 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
+import it.volpini.vgi.exceptions.VgiAuthenticationException;
 import it.volpini.vgi.general.CostantiVgi;
 import it.volpini.vgi.general.Esito;
-import it.volpini.vgi.general.Result;
 import it.volpini.vgi.security.LoginVgi;
 
 @Service
@@ -54,24 +55,23 @@ public class AuthService {
         res.addHeader("X-Vgi", token);
     }
 	
-	public Result<Boolean> authenticateUser(LoginVgi login, HttpServletRequest req, HttpServletResponse resp) {
-		Esito esito;
-		Result<Boolean> result = new Result<Boolean>();
-		Authentication auth = attemptAuthentication(login);
-		if (auth != null && auth.isAuthenticated()) {
-			try {
+	public Esito authenticateUser(LoginVgi login, HttpServletRequest req, HttpServletResponse resp)
+			throws VgiAuthenticationException {
+		try {
+			Authentication auth = attemptAuthentication(login);
+			if (auth != null && auth.isAuthenticated()) {
 				successfullAuthentication(req, resp, auth);
-				esito = new Esito(CostantiVgi.CODICE_OK, "Autenticazione eseguita con successo");
-			} catch (IOException ex) {
-				esito = new Esito(CostantiVgi.CODICE_ERRORE, "Errore durante la procedura di autenticazione riprovare");
-			} catch (ServletException servException) {
-				esito = new Esito(CostantiVgi.CODICE_ERRORE, "Errore durante la procedura di autenticazione riprovare");
+				return new Esito("Autenticazione eseguita con successo", true);
+			} else {
+				throw new VgiAuthenticationException("Autenticazione fallita");
 			}
-		}else {
-			esito = new Esito(CostantiVgi.CODICE_ERRORE, "Credenziali di autenticazione non valide");
+		} catch (IOException ioEx) {
+			throw new VgiAuthenticationException(ioEx.getMessage());
+		} catch (ServletException sEx) {
+			throw new VgiAuthenticationException(sEx.getMessage());
+		} catch (AuthenticationException authEx) {
+			throw new VgiAuthenticationException(authEx.getMessage());
 		}
-		result.setEsito(esito);
-		return result;
 	}
 
 }

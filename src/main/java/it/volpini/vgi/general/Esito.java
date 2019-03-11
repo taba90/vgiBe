@@ -1,26 +1,18 @@
 package it.volpini.vgi.general;
 
 public class Esito {
-	
-	private String codice;
-	
+		
 	private String descrizione;
 	
-	public Esito(String codice, String descrizione) {
-		this.codice=codice;
+	private boolean esito;
+	
+	public Esito(String descrizione, boolean esito) {
 		this.descrizione=descrizione;
+		this.esito = esito;
 	}
 	
 	public Esito () {
 		
-	}
-
-	public String getCodice() {
-		return codice;
-	}
-
-	public void setCodice(String codice) {
-		this.codice = codice;
 	}
 
 	public String getDescrizione() {
@@ -30,7 +22,12 @@ public class Esito {
 	public void setDescrizione(String descrizione) {
 		this.descrizione = descrizione;
 	}
-	
-	
 
+	public boolean isEsito() {
+		return esito;
+	}
+
+	public void setEsito(boolean esito) {
+		this.esito = esito;
+	}
 }

@@ -3,15 +3,20 @@ package it.volpini.vgi.service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityExistsException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import it.volpini.vgi.dao.IntervalloEtaDao;
 import it.volpini.vgi.domain.IntervalloEta;
+import it.volpini.vgi.exceptions.LinkedElementsExistException;
+import it.volpini.vgi.exceptions.ElementNotFoundException;
+import it.volpini.vgi.exceptions.NullParamException;
 import it.volpini.vgi.general.CostantiVgi;
 import it.volpini.vgi.general.Esito;
-import it.volpini.vgi.general.Result;
 
 
 @Service
@@ -21,20 +26,30 @@ public class IntervalloEtaService {
 	@Autowired
 	private IntervalloEtaDao intervalloEtaDao;
 	
-	public IntervalloEta save(IntervalloEta intervalloEta) {
-		return intervalloEtaDao.save(intervalloEta);
+	public IntervalloEta saveOrUpdate(Optional<IntervalloEta> intervalloEta) throws NullParamException {
+		return intervalloEtaDao.save(intervalloEta.orElseThrow(()-> new NullParamException("Uno o più parametri non sono presenti nella request")));
 	}
 	
-	public Optional<IntervalloEta> findById(Long id){
-		return intervalloEtaDao.findById(id);
+	public IntervalloEta findById(Long id) throws ElementNotFoundException{
+		return intervalloEtaDao.findById(id).orElseThrow(()-> new ElementNotFoundException("L'elemento indicato non è presente"));
 	}
 	
 	public List<IntervalloEta> findAll(){
 		return intervalloEtaDao.findAll();
 	}
 	
-	public void delete(Long id) {
-	    intervalloEtaDao.deleteById(id);
+	public void delete(Long id) throws LinkedElementsExistException {
+		try {
+			intervalloEtaDao.deleteById(id);
+		} catch (DataIntegrityViolationException dive) {
+			throw new LinkedElementsExistException(dive.getMessage(), dive);
+
+		}
+	}
+	
+	public Esito deleteIntervallo(Long id) throws LinkedElementsExistException {
+		delete(id);
+		return new Esito(CostantiVgi.DESCR_OK, true);
 	}
 	
 	public void delete(IntervalloEta intervalloEta) {
@@ -42,93 +57,13 @@ public class IntervalloEtaService {
 	}
 	
 	
-	public Result<IntervalloEta> save(Optional<IntervalloEta> ie) {
-		Result<IntervalloEta> result=new Result<>();
-		Esito esito;
-		try {
-			if (ie.isPresent()) {
-				result.setResult(save(ie.get()));
-				esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
-			} else {
-				esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + " nessun input da recuperare");
-			}
-		} catch (Exception e) {
-			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + e.getMessage());
-		}
-		result.setEsito(esito);
-		return result;
-	}
 	
-	public Result<IntervalloEta> findAllIntervalli(){
-		Result<IntervalloEta> result=new Result<>();
-		Esito esito;
-		try {
-			result.setResults(findAll());
-			esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
-		}catch(Exception e) {
-			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + e.getMessage());
-		}
-		result.setEsito(esito);
-		return result;
-
-	}
 	
-	public Result<IntervalloEta> update(Optional<IntervalloEta> ie) {
-		Result<IntervalloEta> result = new Result<>();
-		Esito esito;
-		try {
-			if (ie.isPresent()) {
-				result.setResult(save(ie.get()));
-				esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
-			} else {
-				esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + "nessun input passato");
-			}
-		} catch (Exception e) {
-			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + e.getMessage());
-		}
-		result.setEsito(esito);
-		return result;
-	}
 	
-	public Result<IntervalloEta> findById(Optional<Long> id) {
-		Result<IntervalloEta> result = new Result<>();
-		Esito esito;
-		try {
-			if (id.isPresent()) {
-				Optional<IntervalloEta> ie = findById(id.get());
-				if (ie.isPresent()) {
-					result.setResult(ie.get());
-					esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
-				} else {
-					esito = new Esito(CostantiVgi.CODICE_OK_RESULT_NULL, CostantiVgi.DESCR_OK_RESULT_NULL);
-				}
-			} else {
-				esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + "nessun input passato");
-			}
-
-		} catch (Exception e) {
-			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + e.getMessage());
-		}
-		result.setEsito(esito);
-		return result;
-	}
 	
-	public Result<IntervalloEta> delete (Optional<Long> id){
-		Result<IntervalloEta> result=new Result<>();
-		Esito esito;
-		try {
-			if(id.isPresent()) {
-				delete(id.get());
-				esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
-			}else {
-				esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE+"nessun input passato");
-			}
-			
-		}catch(Exception e) {
-			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + e.getMessage());
-		}
-		result.setEsito(esito);
-		return result;
-	}
+	
+	
+	
+	
 
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,9 +15,11 @@ import it.volpini.vgi.dao.UserLocationDao;
 import it.volpini.vgi.domain.Legenda;
 import it.volpini.vgi.domain.UserLocation;
 import it.volpini.vgi.domain.VgiUser;
-import it.volpini.vgi.general.CostantiVgi;
+import it.volpini.vgi.exceptions.LinkedElementsExistException;
+import it.volpini.vgi.exceptions.ElementNotFoundException;
+import it.volpini.vgi.exceptions.NullParamException;
+import it.volpini.vgi.exceptions.UserNotInSessionException;
 import it.volpini.vgi.general.Esito;
-import it.volpini.vgi.general.Result;
 import it.volpini.vgi.utils.GeometryUtils;
 
 @Service
@@ -41,8 +44,12 @@ public class UserLocationService {
 		return userLocationDao.findAll();
 	}
 	
-	public void delete(Long id) {
-		userLocationDao.deleteById(id);
+	public void delete(Long id) throws LinkedElementsExistException {
+		try {
+			userLocationDao.deleteById(id);
+		} catch (DataIntegrityViolationException dive) {
+			throw new LinkedElementsExistException(dive.getMessage(), dive);
+		}
 	}
 	
 	public List<UserLocation> findByIdUser(Long id){
@@ -53,44 +60,21 @@ public class UserLocationService {
 		return userLocationDao.findByVgiUser_idAndLegenda_id(idUser, idLegenda);
 	}
 	
-	public Result<UserLocation> saveLocation(Optional<UserLocation> oplocation, Optional<Long> opIdUser, Long idLegenda) {
-		Result<UserLocation> result = new Result<>();
-		Esito esito;
-		try {
-		if (oplocation.isPresent()) {
-			UserLocation location = oplocation.get();
-			Legenda legenda = new Legenda();
-			legenda.setId(idLegenda);
-			Point point = geomUtils.getPoint(location.getLongitude(), location.getLatitude());
-			point.setSRID(3857);
-			location.setLegenda(legenda);
-			location.setLocation(point);
-			if (opIdUser.isPresent()) {
-				location.setVgiUser(new VgiUser(opIdUser.get()));
-				saveOrUpdate(location);
-				esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
-			} else {
-				esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE
-						+ " impossibile recuperare l'utente da associare alla posizione inviata");
-			}
-		} else {
-			esito = new Esito(CostantiVgi.CODICE_ERRORE,
-					CostantiVgi.DESCR_ERRORE + " impossibile recuperare la posizione inviata");
-		}
-		}catch (Throwable t) {
-			t.printStackTrace();
-			esito = new Esito(CostantiVgi.CODICE_ERRORE,
-					CostantiVgi.DESCR_ERRORE +t.getMessage());
-		}
-		result.setEsito(esito);
-		return result;
+	public UserLocation saveLocation(Optional<UserLocation> oplocation, Optional<Long> opIdUser, Long idLegenda) throws UserNotInSessionException, NullParamException {
+		UserLocation location = oplocation.orElseThrow(()->new NullParamException("Uno o più parametri non sono presenti nella request"));
+		Legenda legenda = new Legenda();
+		legenda.setId(idLegenda);
+		Point point = geomUtils.getPoint(location.getLongitude(), location.getLatitude());
+		point.setSRID(3857);
+		location.setLegenda(legenda);
+		location.setLocation(point);
+		location.setVgiUser(new VgiUser(opIdUser.orElseThrow(
+				()-> new UserNotInSessionException("L'utente non risulta essere in sessione"))));
+		return saveOrUpdate(location);
 	}
 	
-	public Result<UserLocation> searchLocation(Optional<String> intervalloAnni, Optional<Long> idLegenda,
+	public List<UserLocation> searchLocation(Optional<String> intervalloAnni, Optional<Long> idLegenda,
 			Optional<Geometry> geom) {
-		Result<UserLocation> result = new Result<>();
-		Esito esito;
-		try {
 			Integer annoA = null;
 			Integer annoB = null;
 			if (intervalloAnni.isPresent()) {
@@ -100,121 +84,34 @@ public class UserLocationService {
 			}
 			List<UserLocation> locations = userLocationDao.searchLocations(Optional.ofNullable(annoA),
 					Optional.ofNullable(annoB), idLegenda, geom);
-			if (locations.size() > 0) {
-				esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
-				result.setResults(locations);
-			} else {
-				esito = new Esito(CostantiVgi.CODICE_OK_RESULT_NULL, CostantiVgi.DESCR_OK_RESULT_NULL);
-			}
-		} catch (Throwable t) {
-			t.printStackTrace();
-			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + t.getMessage());
-		}
-		result.setEsito(esito);
-		return result;
+			return  locations;
 	}
 	
-	public Result<UserLocation> update(Optional<UserLocation> ul) {
-		Result<UserLocation> result = new Result<>();
-		Esito esito;
-		try {
-			if (ul.isPresent()) {
-				result.setResult(saveOrUpdate(ul.get()));
-				esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
-			} else {
-				esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + "nessun input passato");
-			}
-		} catch (Exception e) {
-			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + e.getMessage());
-		}
-		result.setEsito(esito);
-		return result;
+	public UserLocation update(Optional<UserLocation> ul) throws NullParamException {
+		
+		return saveOrUpdate(ul.orElseThrow(
+				()-> (new NullParamException("Uno o più parametri non sono presenti nella request"))));
 	}
 	
-	public Result<UserLocation> deleteLocation(Optional<Long> idLocation){
-		Result<UserLocation> result=new Result<>();
-		Esito esito;
-		try {
-		if(idLocation.isPresent()) {
-			delete(idLocation.get());
-			esito= new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
-		}else {
-			esito= new Esito(CostantiVgi.CODICE_OK_RESULT_NULL, CostantiVgi.DESCR_OK_RESULT_NULL+": nessuna localizzazione è stata passata per la cancellazione");
-		}
-		}catch(Throwable t) {
-			t.printStackTrace();
-			esito = new Esito(CostantiVgi.CODICE_ERRORE,
-					CostantiVgi.DESCR_ERRORE +t.getMessage());
-		}
-		result.setEsito(esito);
-		return result;
+	public Esito deleteLocation(Long idLocation) throws LinkedElementsExistException{
+		delete(idLocation);
+		return new Esito("Operazione eseguita senza errori", true);
 	}
 	
-	public Result<UserLocation> getUserLocations(Optional<Long> idUser) {
-		Result<UserLocation> result = new Result<UserLocation>();
-		Esito esito;
-		try {
-			if (idUser.isPresent()) {
-				List<UserLocation> userlocations = findByIdUser(idUser.get());
-				if (userlocations != null && userlocations.size() > 0) {
-					result.setResults(userlocations);
-					esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
-				} else {
-					esito = new Esito(CostantiVgi.CODICE_OK_RESULT_NULL, CostantiVgi.DESCR_OK_RESULT_NULL);
-				}
-			} else {
-				esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE);
-			}
-		} catch (Throwable t) {
-			t.printStackTrace();
-			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + t.getMessage());
-		}
-		result.setEsito(esito);
-		return result;
+	public List<UserLocation> getUserLocations(Optional<Long> idUser) throws UserNotInSessionException {
+		
+		return findByIdUser(idUser.orElseThrow(()->new UserNotInSessionException("L'utente non risulta essere in sessione")));
 	}
 	
-	public Result<UserLocation> getUserLocationsByLegenda(Optional<Long> idUser, Optional<Long> idLegenda) {
-		Result<UserLocation> result = new Result<UserLocation>();
-		Esito esito;
-		try {
-			if (idUser.isPresent() && idLegenda.isPresent()) {
-				List<UserLocation> userlocations = findByUserAndLegenda(idUser.get(), idLegenda.get());
-				if (userlocations != null && userlocations.size() > 0) {
-					result.setResults(userlocations);
-					esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
-				} else {
-					esito = new Esito(CostantiVgi.CODICE_OK_RESULT_NULL, CostantiVgi.DESCR_OK_RESULT_NULL);
-				}
-			} else {
-				esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE);
-			}
-		} catch (Throwable t) {
-			t.printStackTrace();
-			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + t.getMessage());
-		}
-		result.setEsito(esito);
-		return result;
+	public List<UserLocation> getUserLocationsByLegenda(Optional<Long> idUser, Long idLegenda) throws UserNotInSessionException {
+		
+		return findByUserAndLegenda(idUser.orElseThrow(()->new UserNotInSessionException("L'utente non risulta essere in sessione")), idLegenda);
 	}
 	
 	
-	public Result<UserLocation> getUserLocationsById(Long idLocation) {
-		Result<UserLocation> result = new Result<UserLocation>();
-		Esito esito;
-		try {
-			Optional<UserLocation> location = findById(idLocation);
-			if (location.isPresent()) {
-				result.setResult(location.get());
-				esito = new Esito(CostantiVgi.CODICE_OK, CostantiVgi.DESCR_OK);
-			} else {
-				esito = new Esito(CostantiVgi.CODICE_OK_RESULT_NULL, CostantiVgi.DESCR_OK_RESULT_NULL);
-			}
-
-		} catch (Throwable t) {
-			t.printStackTrace();
-			esito = new Esito(CostantiVgi.CODICE_ERRORE, CostantiVgi.DESCR_ERRORE + t.getMessage());
-		}
-		result.setEsito(esito);
-		return result;
+	public UserLocation getUserLocationById(Long idLocation) throws ElementNotFoundException {
+		
+		return findById(idLocation).orElseThrow(()->new ElementNotFoundException("L'elemento indicato non esiste"));
 	}
 	
 
