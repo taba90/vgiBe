@@ -19,8 +19,6 @@ import it.volpini.vgi.domain.RoleUser;
 import it.volpini.vgi.domain.UserLocation;
 import it.volpini.vgi.domain.VgiUser;
 import it.volpini.vgi.exceptions.ElementNotFoundException;
-import it.volpini.vgi.exceptions.NullParamException;
-import it.volpini.vgi.exceptions.UserNotInSessionException;
 import it.volpini.vgi.general.CostantiVgi;
 import it.volpini.vgi.general.Esito;
 
@@ -40,9 +38,7 @@ public class VgiUserService {
     private BCryptPasswordEncoder pwdEncoder;
 	
 	
-	public Esito saveUser(Optional<VgiUser> opuser) throws NullParamException {
-		VgiUser user = opuser
-				.orElseThrow(() -> new NullParamException("Uno o più parametri non sono presenti nella request"));
+	public Esito saveUser(VgiUser user) {
 		String pwdCrypted = pwdEncoder.encode(user.getPassword());
 		user.setPassword(pwdCrypted);
 		RoleUser role = roleService.findByRoleName(RoleUserService.ROLE_USER);
@@ -57,9 +53,9 @@ public class VgiUserService {
 		return new Esito(CostantiVgi.DESCR_OK, true);
 	}
 	
-	public Optional<Long> getIdAuthenticatedUser(){
+	public Long getIdAuthenticatedUser(){
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return Optional.ofNullable(findByUsername(auth.getName()).getId());
+        return findByUsername(auth.getName()).getId();
 	}
 	
 	public VgiUser save(VgiUser vgiUser) {
@@ -87,10 +83,8 @@ public class VgiUserService {
 		vgiUserDao.deleteById(id);
 	}
 	
-	public Esito selfDeleteUser() throws UserNotInSessionException, ElementNotFoundException {
-		Optional<Long> id = getIdAuthenticatedUser();
-		Optional<VgiUser> vgiUser = findById(
-				id.orElseThrow(() -> new UserNotInSessionException("L'utente non risulta essere in sessione")));
+	public Esito selfDeleteUser() throws ElementNotFoundException {
+		Optional<VgiUser> vgiUser = findById(getIdAuthenticatedUser());
 		GhostUser ghost = new GhostUser(vgiUser);
 		ghostDao.save(ghost);
 		Optional<Long> idGu = ghostDao.findGhostUserIdByUsername(ghost.getUsername());

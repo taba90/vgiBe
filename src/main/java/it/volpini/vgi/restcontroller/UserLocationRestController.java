@@ -17,10 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vividsolutions.jts.geom.Geometry;
 
 import it.volpini.vgi.domain.UserLocation;
-import it.volpini.vgi.exceptions.LinkedElementsExistException;
 import it.volpini.vgi.exceptions.ElementNotFoundException;
-import it.volpini.vgi.exceptions.NullParamException;
-import it.volpini.vgi.exceptions.UserNotInSessionException;
+import it.volpini.vgi.exceptions.LinkedElementsExistException;
 import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.service.UserLocationService;
 import it.volpini.vgi.service.VgiUserService;
@@ -36,10 +34,9 @@ public class UserLocationRestController {
 	private VgiUserService userService;
 	
 	@PostMapping("{idLegenda}/new")
-	public UserLocation newLocation(@RequestBody UserLocation location, @PathVariable Long idLegenda) throws UserNotInSessionException, NullParamException{
-		Optional<UserLocation> opLoc=Optional.ofNullable(location);
-		Optional<Long> opIdAuth=userService.getIdAuthenticatedUser();
-		return locationService.saveLocation(opLoc, opIdAuth, idLegenda);
+	public UserLocation newLocation(@RequestBody UserLocation location, @PathVariable Long idLegenda){
+		Long idAuth=userService.getIdAuthenticatedUser();
+		return locationService.saveLocation(location, idAuth, idLegenda);
 	}
 	
 	@GetMapping("/search")
@@ -52,9 +49,8 @@ public class UserLocationRestController {
 	}
 	
 	@PatchMapping()
-	public UserLocation udpate(@RequestBody UserLocation location) throws NullParamException{
-		Optional<UserLocation> opLoc=Optional.ofNullable(location);
-		return locationService.update(opLoc);
+	public UserLocation udpate(@RequestBody UserLocation location) {
+		return locationService.update(location);
 	}
 	
 	@DeleteMapping("/{idLoc}")
@@ -63,15 +59,14 @@ public class UserLocationRestController {
 	}
 	
 	@GetMapping("/user")
-	public List<UserLocation> getUserLocations() throws UserNotInSessionException{
-		Optional<Long> opIdAuth=userService.getIdAuthenticatedUser();
-		return locationService.getUserLocations(opIdAuth);
+	public List<UserLocation> getUserLocations() {
+		return locationService.getUserLocations(userService.getIdAuthenticatedUser());
 	}
 	
 	@GetMapping("/{idLegenda}/user")
-	public List<UserLocation> getUserLocationsByIdLegenda(@PathVariable Long idLegenda) throws UserNotInSessionException{
-		Optional<Long> opIdAuth=userService.getIdAuthenticatedUser();
-		return locationService.getUserLocationsByLegenda(opIdAuth, idLegenda);
+	public List<UserLocation> getUserLocationsByIdLegenda(@PathVariable Long idLegenda) {
+		Long idAuth=userService.getIdAuthenticatedUser();
+		return locationService.getUserLocationsByLegenda(idAuth, idLegenda);
 	}
 	
 	@GetMapping("/{idLocation}")

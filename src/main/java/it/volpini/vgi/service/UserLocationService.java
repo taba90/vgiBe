@@ -15,10 +15,8 @@ import it.volpini.vgi.dao.UserLocationDao;
 import it.volpini.vgi.domain.Legenda;
 import it.volpini.vgi.domain.UserLocation;
 import it.volpini.vgi.domain.VgiUser;
-import it.volpini.vgi.exceptions.LinkedElementsExistException;
 import it.volpini.vgi.exceptions.ElementNotFoundException;
-import it.volpini.vgi.exceptions.NullParamException;
-import it.volpini.vgi.exceptions.UserNotInSessionException;
+import it.volpini.vgi.exceptions.LinkedElementsExistException;
 import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.utils.GeometryUtils;
 
@@ -60,16 +58,14 @@ public class UserLocationService {
 		return userLocationDao.findByVgiUser_idAndLegenda_id(idUser, idLegenda);
 	}
 	
-	public UserLocation saveLocation(Optional<UserLocation> oplocation, Optional<Long> opIdUser, Long idLegenda) throws UserNotInSessionException, NullParamException {
-		UserLocation location = oplocation.orElseThrow(()->new NullParamException("Uno o più parametri non sono presenti nella request"));
+	public UserLocation saveLocation(UserLocation location, Long idUser, Long idLegenda){
 		Legenda legenda = new Legenda();
 		legenda.setId(idLegenda);
 		Point point = geomUtils.getPoint(location.getLongitude(), location.getLatitude());
 		point.setSRID(3857);
 		location.setLegenda(legenda);
 		location.setLocation(point);
-		location.setVgiUser(new VgiUser(opIdUser.orElseThrow(
-				()-> new UserNotInSessionException("L'utente non risulta essere in sessione"))));
+		location.setVgiUser(new VgiUser(idUser));
 		return saveOrUpdate(location);
 	}
 	
@@ -87,10 +83,8 @@ public class UserLocationService {
 			return  locations;
 	}
 	
-	public UserLocation update(Optional<UserLocation> ul) throws NullParamException {
-		
-		return saveOrUpdate(ul.orElseThrow(
-				()-> (new NullParamException("Uno o più parametri non sono presenti nella request"))));
+	public UserLocation update(UserLocation ul) {
+		return saveOrUpdate(ul);
 	}
 	
 	public Esito deleteLocation(Long idLocation) throws LinkedElementsExistException{
@@ -98,14 +92,14 @@ public class UserLocationService {
 		return new Esito("Operazione eseguita senza errori", true);
 	}
 	
-	public List<UserLocation> getUserLocations(Optional<Long> idUser) throws UserNotInSessionException {
+	public List<UserLocation> getUserLocations(Long idUser) {
 		
-		return findByIdUser(idUser.orElseThrow(()->new UserNotInSessionException("L'utente non risulta essere in sessione")));
+		return findByIdUser(idUser);
 	}
 	
-	public List<UserLocation> getUserLocationsByLegenda(Optional<Long> idUser, Long idLegenda) throws UserNotInSessionException {
+	public List<UserLocation> getUserLocationsByLegenda(Long idUser, Long idLegenda) {
 		
-		return findByUserAndLegenda(idUser.orElseThrow(()->new UserNotInSessionException("L'utente non risulta essere in sessione")), idLegenda);
+		return findByUserAndLegenda(idUser, idLegenda);
 	}
 	
 	

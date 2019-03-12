@@ -11,9 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.volpini.vgi.dao.LegendaDao;
 import it.volpini.vgi.domain.Legenda;
-import it.volpini.vgi.exceptions.LinkedElementsExistException;
 import it.volpini.vgi.exceptions.ElementNotFoundException;
-import it.volpini.vgi.exceptions.NullParamException;
+import it.volpini.vgi.exceptions.LinkedElementsExistException;
 import it.volpini.vgi.general.Esito;
 
 @Service
@@ -44,13 +43,11 @@ public class LegendaService {
 		}
 	}
 	
-	public Legenda saveOrUpdate(Optional<Legenda> opLegenda) throws NullParamException {
-		return save(opLegenda.orElseThrow(
-				()-> new NullParamException("Uno o più parametri non sono presenti nella request")));
+	public Legenda saveOrUpdate(Legenda legenda){
+		return save(legenda);
 	}
 	
-	public Legenda findById(Optional<Long> opId) throws ElementNotFoundException, NullParamException {
-		Long id = opId.orElseThrow(()-> new NullParamException("Uno o più parametri non sono presenti nella request"));
+	public Legenda findLegendaById(Long id) throws ElementNotFoundException{
 		return findById(id)
 				.orElseThrow(
 						()-> new ElementNotFoundException("Errore, l'elemento indicato non è presente"));

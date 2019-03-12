@@ -1,9 +1,6 @@
 package it.volpini.vgi.service;
 
 import java.util.List;
-import java.util.Optional;
-
-import javax.persistence.EntityExistsException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,9 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.volpini.vgi.dao.IntervalloEtaDao;
 import it.volpini.vgi.domain.IntervalloEta;
-import it.volpini.vgi.exceptions.LinkedElementsExistException;
 import it.volpini.vgi.exceptions.ElementNotFoundException;
-import it.volpini.vgi.exceptions.NullParamException;
+import it.volpini.vgi.exceptions.LinkedElementsExistException;
 import it.volpini.vgi.general.CostantiVgi;
 import it.volpini.vgi.general.Esito;
 
@@ -26,8 +22,8 @@ public class IntervalloEtaService {
 	@Autowired
 	private IntervalloEtaDao intervalloEtaDao;
 	
-	public IntervalloEta saveOrUpdate(Optional<IntervalloEta> intervalloEta) throws NullParamException {
-		return intervalloEtaDao.save(intervalloEta.orElseThrow(()-> new NullParamException("Uno o più parametri non sono presenti nella request")));
+	public IntervalloEta saveOrUpdate(IntervalloEta intervalloEta){
+		return intervalloEtaDao.save(intervalloEta);
 	}
 	
 	public IntervalloEta findById(Long id) throws ElementNotFoundException{

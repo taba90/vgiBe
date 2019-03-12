@@ -18,7 +18,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import it.volpini.vgi.security.JWTAuthenticationFilter;
 import it.volpini.vgi.security.JWTAuthorizationFilter;
 import it.volpini.vgi.security.VgiUserDetailsService;
 

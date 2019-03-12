@@ -1,5 +1,6 @@
 package it.volpini.vgi.dao.custom.impl;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -22,6 +24,7 @@ public class CustomUserLocationDaoImpl implements CustomUserLocationDao{
 
 	@Override
 	public List<UserLocation> searchLocations(Optional<Integer> anni1, Optional<Integer> anni2, Optional<Long> idLegenda, Optional<Geometry> geom) {
+		LinkedList<Param> parametri = new LinkedList<Param>();
 		StringBuffer strquery=new StringBuffer("select ul from UserLocation ul where ");
 		boolean and=false;
 		if(anni1.isPresent()) {
@@ -49,7 +52,7 @@ public class CustomUserLocationDaoImpl implements CustomUserLocationDao{
 			strquery.append(" within(ul.location, :geom)=true ");
 			and=true;
 		}
-		Query query=eM.createQuery(strquery.toString());
+		Query query = eM.createQuery(strquery.toString());
 		return null;
 	}
 	
