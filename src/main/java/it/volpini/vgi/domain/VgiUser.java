@@ -1,7 +1,9 @@
 package it.volpini.vgi.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -9,6 +11,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -16,12 +20,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name="vgi_utenti")
 public class VgiUser extends AbstractEntity{
 	
+	@NotNull
+	@Column(unique=true, nullable=false)
 	private String username;
 	
+	@NotNull
+	@Column(unique=true, nullable=false)
 	private String password;
 	
+	@Email
+	@Column(unique=true, nullable=false)
 	private String email;
 	
+	@NotNull
 	private Integer anni;
 		
 	@JsonIgnore
@@ -92,8 +103,10 @@ public class VgiUser extends AbstractEntity{
 	}
 	
 	public void addLocation(UserLocation location) {
+		if(this.locations== null) {
+			this.locations=(new ArrayList<UserLocation>());
+		}
 		this.locations.add(location);
-		location.setVgiUser(this);
 	}
 
 	public List<RoleUser> getRuoli() {
@@ -105,8 +118,10 @@ public class VgiUser extends AbstractEntity{
 	}
 	
 	public void addRuolo(RoleUser role) {
-		this.getRuoli().add(role);
-		role.getUtenti().add(this);
+		if(this.ruoli==null) {
+			this.ruoli = new ArrayList<RoleUser>();
+		}
+		this.ruoli.add(role);
 	}
 
 }

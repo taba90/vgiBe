@@ -84,18 +84,20 @@ public class VgiUserService {
 	}
 	
 	public Esito selfDeleteUser() throws ElementNotFoundException {
-		Optional<VgiUser> vgiUser = findById(getIdAuthenticatedUser());
+		VgiUser vgiUser = findById(getIdAuthenticatedUser()).orElseThrow(
+				()-> new ElementNotFoundException("Non ho trovato l'elemento indicato"));
 		GhostUser ghost = new GhostUser(vgiUser);
 		ghostDao.save(ghost);
 		Optional<Long> idGu = ghostDao.findGhostUserIdByUsername(ghost.getUsername());
 		ghost = new GhostUser(
 				idGu.orElseThrow(() -> new ElementNotFoundException("Non ho trovato l'elemento indicato")));
-		List<UserLocation> locations = locationDao.findByVgiUser_id(vgiUser.get().getId());
+		List<UserLocation> locations = locationDao.findByVgiUser_id(vgiUser.getId());
 		for (UserLocation l : locations) {
 			l.setGosthUser(ghost);
 			l.setVgiUser(null);
 			locationDao.save(l);
 		}
+		delete(vgiUser.getId());
 		return new Esito(CostantiVgi.DESCR_OK, true);
 
 	}

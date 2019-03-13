@@ -2,6 +2,8 @@ package it.volpini.vgi.restcontroller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +28,7 @@ public class LegendaRestController {
 	private LegendaService legendaService;
 	
 	@PostMapping()
-	public Legenda newLegenda(@RequestBody Legenda legenda) {
+	public Legenda newLegenda(@RequestBody @Valid Legenda legenda) {
 		return legendaService.saveOrUpdate(legenda);
 	}
 	
@@ -36,7 +38,7 @@ public class LegendaRestController {
 	}
 	
 	@PatchMapping()
-	public Legenda update(@RequestBody Legenda legenda) {
+	public Legenda update(@RequestBody @Valid Legenda legenda) {
 		return legendaService.saveOrUpdate(legenda);
 	}
 	

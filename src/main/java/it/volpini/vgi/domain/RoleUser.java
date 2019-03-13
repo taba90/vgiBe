@@ -1,5 +1,6 @@
 package it.volpini.vgi.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -47,8 +48,10 @@ public class RoleUser extends AbstractEntity{
 	}
 	
 	public void addUtente(VgiUser utente) {
-		this.getUtenti().add(utente);
-		utente.getRuoli().add(this);
+		if(this.utenti ==null) {
+			this.utenti= new ArrayList<VgiUser>();
+		}
+		this.utenti.add(utente);
 	}
 	
 	

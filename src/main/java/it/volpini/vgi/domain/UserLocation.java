@@ -1,12 +1,11 @@
 package it.volpini.vgi.domain;
 
-import java.util.ArrayList;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import com.bedatadriven.jackson.datatype.jts.serialization.GeometryDeserializer;
 import com.bedatadriven.jackson.datatype.jts.serialization.GeometrySerializer;
@@ -19,21 +18,22 @@ import com.vividsolutions.jts.geom.Point;
 @Table(name="user_locations")
 public class UserLocation extends AbstractEntity{
 	
-	private String indirizzo;
-	
 	@Column(columnDefinition = "TEXT")
 	private String descrizione;
 	
 	private String nome;
 	
+	@NotNull
 	private Float longitude;
 	
+	@NotNull
 	private Float latitude;
 	
 	@JsonSerialize(using = GeometrySerializer.class)
     @JsonDeserialize(contentUsing = GeometryDeserializer.class)
 	private Point location;
 	
+	@NotNull
     @ManyToOne(fetch=FetchType.EAGER)
 	private Legenda legenda;
     
@@ -43,15 +43,6 @@ public class UserLocation extends AbstractEntity{
 	@ManyToOne
 	private GhostUser ghostUser;
 	
-
-	public String getIndirizzo() {
-		return indirizzo;
-	}
-
-	public void setIndirizzo(String indirizzo) {
-		this.indirizzo = indirizzo;
-	}
-	
 	
 
 	public VgiUser getVgiUser() {
@@ -60,10 +51,6 @@ public class UserLocation extends AbstractEntity{
 
 	public void setVgiUser(VgiUser vgiUser) {
 		this.vgiUser = vgiUser;
-		if(vgiUser.getLocations()==null) {
-			vgiUser.setLocations(new ArrayList<UserLocation>());
-		}
-		vgiUser.getLocations().add(this);
 	}
 
 	public String getDescrizione() {
@@ -88,7 +75,6 @@ public class UserLocation extends AbstractEntity{
 
 	public void setGosthUser(GhostUser ghostUser) {
 		this.ghostUser = ghostUser;
-		ghostUser.getLocations().add(this);
 	}
 
 	public Legenda getLegenda() {
@@ -97,10 +83,6 @@ public class UserLocation extends AbstractEntity{
 
 	public void setLegenda(Legenda legenda) {
 		this.legenda = legenda;
-		if(legenda.getUserLocations()==null) {
-			legenda.setUserLocations(new ArrayList<UserLocation>());
-		}
-		legenda.getUserLocations().add(this);
 	}
 
 	public Float getLongitude() {

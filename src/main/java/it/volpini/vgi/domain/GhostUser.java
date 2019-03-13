@@ -30,11 +30,9 @@ public class GhostUser extends AbstractEntity{
 		this.id=id;
 	}
 	
-	public GhostUser(Optional<VgiUser> user) {
-		if (user.isPresent()) {
-			this.anni = user.get().getAnni();
-			this.username = user.get().getUsername();
-		}
+	public GhostUser(VgiUser user) {
+		this.anni = user.getAnni();
+		this.username = user.getUsername();
 	}
 
 	public String getUsername() {

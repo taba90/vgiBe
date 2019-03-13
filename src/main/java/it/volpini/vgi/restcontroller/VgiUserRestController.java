@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -40,7 +41,7 @@ public class VgiUserRestController {
 	
 	
 	@PostMapping("/register")
-	public Esito registerUser(@RequestBody VgiUser user) {
+	public Esito registerUser(@RequestBody @Valid VgiUser user) {
 		return userService.saveUser(user);
 	}
 	
@@ -56,7 +57,7 @@ public class VgiUserRestController {
 	}
 	
 	@PatchMapping("/update")
-	public Esito update(@RequestBody VgiUser user) {
+	public Esito update(@RequestBody @Valid VgiUser user) {
 		return userService.saveUser(user);
 	}
 	

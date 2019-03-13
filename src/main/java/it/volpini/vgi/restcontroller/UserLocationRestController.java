@@ -3,6 +3,8 @@ package it.volpini.vgi.restcontroller;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,24 +35,28 @@ public class UserLocationRestController {
 	@Autowired
 	private VgiUserService userService;
 	
-	@PostMapping("{idLegenda}/new")
-	public UserLocation newLocation(@RequestBody UserLocation location, @PathVariable Long idLegenda){
+	@PostMapping()
+	public Esito newLocation(@RequestBody @Valid UserLocation location){
 		Long idAuth=userService.getIdAuthenticatedUser();
-		return locationService.saveLocation(location, idAuth, idLegenda);
+		return locationService.saveOrUpdateLocation(location, idAuth);
 	}
 	
 	@GetMapping("/search")
-	public List<UserLocation> search(@RequestParam(value="intervalloAnni", required=false) String intervalloAnni, 
-			@RequestParam(value="idLegenda", required=false) Long idLegenda, @RequestParam(value="geom", required=false) Geometry geom){
-		Optional<String> opInterval=Optional.ofNullable(intervalloAnni);
+	public List<UserLocation> search(@RequestParam(value="annoA", required=false) Integer annoA, 
+			@RequestParam(value="annoB", required=false) Integer annoB, 
+			@RequestParam(value="idLegenda", required=false) Long idLegenda, 
+			@RequestParam(value="geom", required=false) Geometry geom){
+		Optional<Integer> opAnnoA=Optional.ofNullable(annoA);
+		Optional<Integer> opAnnoB=Optional.ofNullable(annoB);
 		Optional<Long>idLegOp=Optional.ofNullable(idLegenda);
 		Optional<Geometry> opGeom=Optional.ofNullable(geom);
-		return locationService.searchLocation(opInterval, idLegOp, opGeom);
+		return locationService.searchLocation(opAnnoA,opAnnoB, idLegOp, opGeom);
 	}
 	
 	@PatchMapping()
-	public UserLocation udpate(@RequestBody UserLocation location) {
-		return locationService.update(location);
+	public Esito udpate(@RequestBody @Valid UserLocation location) {
+		Long idAuth = userService.getIdAuthenticatedUser();
+		return locationService.saveOrUpdateLocation(location, idAuth);
 	}
 	
 	@DeleteMapping("/{idLoc}")

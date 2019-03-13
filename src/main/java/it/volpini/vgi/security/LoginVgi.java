@@ -1,9 +1,13 @@
 package it.volpini.vgi.security;
 
+import javax.validation.constraints.NotNull;
+
 public class LoginVgi {
 	
+	@NotNull
 	private String username;
 	
+	@NotNull
 	private String password;
 	
 	public LoginVgi () {

@@ -1,5 +1,6 @@
 package it.volpini.vgi.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -7,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -16,12 +18,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Legenda extends AbstractEntity{
 	
 	@Column(unique=true)
+	@NotNull
 	private String codice;
 	
 	private String descrizione;
 	
 	private boolean active;
 	
+	@NotNull
 	private String colore;
 	
 	@JsonIgnore
@@ -74,6 +78,13 @@ public class Legenda extends AbstractEntity{
 
 	public void setUserLocations(List<UserLocation> userLocations) {
 		this.userLocations = userLocations;
+	}
+	
+	public void addUserLocation(UserLocation location) {
+		if(this.userLocations == null) {
+			this.userLocations=new ArrayList<UserLocation>();
+		}
+		this.userLocations.add(location);
 	}
 	
 	

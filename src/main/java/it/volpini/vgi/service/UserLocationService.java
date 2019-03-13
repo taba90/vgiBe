@@ -12,11 +12,11 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 import it.volpini.vgi.dao.UserLocationDao;
-import it.volpini.vgi.domain.Legenda;
 import it.volpini.vgi.domain.UserLocation;
 import it.volpini.vgi.domain.VgiUser;
 import it.volpini.vgi.exceptions.ElementNotFoundException;
 import it.volpini.vgi.exceptions.LinkedElementsExistException;
+import it.volpini.vgi.general.CostantiVgi;
 import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.utils.GeometryUtils;
 
@@ -58,33 +58,20 @@ public class UserLocationService {
 		return userLocationDao.findByVgiUser_idAndLegenda_id(idUser, idLegenda);
 	}
 	
-	public UserLocation saveLocation(UserLocation location, Long idUser, Long idLegenda){
-		Legenda legenda = new Legenda();
-		legenda.setId(idLegenda);
+	public Esito saveOrUpdateLocation(UserLocation location, Long idUser){
 		Point point = geomUtils.getPoint(location.getLongitude(), location.getLatitude());
 		point.setSRID(3857);
-		location.setLegenda(legenda);
 		location.setLocation(point);
 		location.setVgiUser(new VgiUser(idUser));
-		return saveOrUpdate(location);
+		saveOrUpdate(location);
+		return new Esito(CostantiVgi.DESCR_OK, true);
 	}
 	
-	public List<UserLocation> searchLocation(Optional<String> intervalloAnni, Optional<Long> idLegenda,
+	public List<UserLocation> searchLocation(Optional<Integer> annoA, Optional<Integer> annoB, Optional<Long> idLegenda,
 			Optional<Geometry> geom) {
-			Integer annoA = null;
-			Integer annoB = null;
-			if (intervalloAnni.isPresent()) {
-				String[] anni = intervalloAnni.get().split("-");
-				annoA = new Integer(anni[0]);
-				annoB = new Integer(anni[1]);
-			}
-			List<UserLocation> locations = userLocationDao.searchLocations(Optional.ofNullable(annoA),
-					Optional.ofNullable(annoB), idLegenda, geom);
+			List<UserLocation> locations = userLocationDao.searchLocations(annoA,
+					annoB, idLegenda, geom);
 			return  locations;
-	}
-	
-	public UserLocation update(UserLocation ul) {
-		return saveOrUpdate(ul);
 	}
 	
 	public Esito deleteLocation(Long idLocation) throws LinkedElementsExistException{
