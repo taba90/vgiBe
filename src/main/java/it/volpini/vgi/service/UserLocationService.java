@@ -15,7 +15,6 @@ import it.volpini.vgi.dao.UserLocationDao;
 import it.volpini.vgi.domain.UserLocation;
 import it.volpini.vgi.domain.VgiUser;
 import it.volpini.vgi.exceptions.ElementNotFoundException;
-import it.volpini.vgi.exceptions.LinkedElementsExistException;
 import it.volpini.vgi.general.CostantiVgi;
 import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.utils.GeometryUtils;
@@ -42,12 +41,8 @@ public class UserLocationService {
 		return userLocationDao.findAll();
 	}
 	
-	public void delete(Long id) throws LinkedElementsExistException {
-		try {
-			userLocationDao.deleteById(id);
-		} catch (DataIntegrityViolationException dive) {
-			throw new LinkedElementsExistException(dive.getMessage(), dive);
-		}
+	public void delete(Long id) {
+		userLocationDao.deleteById(id);
 	}
 	
 	public List<UserLocation> findByIdUser(Long id){
@@ -74,7 +69,7 @@ public class UserLocationService {
 			return  locations;
 	}
 	
-	public Esito deleteLocation(Long idLocation) throws LinkedElementsExistException{
+	public Esito deleteLocation(Long idLocation) { 
 		delete(idLocation);
 		return new Esito("Operazione eseguita senza errori", true);
 	}

@@ -92,10 +92,12 @@ public class VgiUserService {
 		ghost = new GhostUser(
 				idGu.orElseThrow(() -> new ElementNotFoundException("Non ho trovato l'elemento indicato")));
 		List<UserLocation> locations = locationDao.findByVgiUser_id(vgiUser.getId());
-		for (UserLocation l : locations) {
-			l.setGosthUser(ghost);
-			l.setVgiUser(null);
-			locationDao.save(l);
+		if(locations != null && locations.size()>0) {
+			for (UserLocation l : locations) {
+				l.setGosthUser(ghost);
+				l.setVgiUser(null);
+				locationDao.save(l);
+			}
 		}
 		delete(vgiUser.getId());
 		return new Esito(CostantiVgi.DESCR_OK, true);

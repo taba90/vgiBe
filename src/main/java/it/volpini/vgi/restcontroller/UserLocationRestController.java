@@ -20,7 +20,6 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import it.volpini.vgi.domain.UserLocation;
 import it.volpini.vgi.exceptions.ElementNotFoundException;
-import it.volpini.vgi.exceptions.LinkedElementsExistException;
 import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.service.UserLocationService;
 import it.volpini.vgi.service.VgiUserService;
@@ -60,7 +59,7 @@ public class UserLocationRestController {
 	}
 	
 	@DeleteMapping("/{idLoc}")
-	public Esito delete(@PathVariable Long idLoc) throws LinkedElementsExistException{
+	public Esito delete(@PathVariable Long idLoc) {
 		return locationService.deleteLocation(idLoc);
 	}
 	

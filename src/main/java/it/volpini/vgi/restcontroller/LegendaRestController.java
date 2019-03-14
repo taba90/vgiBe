@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import it.volpini.vgi.domain.Legenda;
 import it.volpini.vgi.exceptions.ElementNotFoundException;
-import it.volpini.vgi.exceptions.LinkedElementsExistException;
 import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.service.LegendaService;
 
@@ -43,7 +43,7 @@ public class LegendaRestController {
 	}
 	
 	@DeleteMapping("/{idLegenda}")
-	public Esito delete(@PathVariable Long idLegenda) throws ElementNotFoundException, LinkedElementsExistException{
+	public Esito delete(@PathVariable Long idLegenda) throws ElementNotFoundException{
 		return legendaService.delete(idLegenda);
 	}
 
