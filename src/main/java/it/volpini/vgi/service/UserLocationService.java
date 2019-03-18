@@ -4,17 +4,19 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
+import it.volpini.vgi.dao.CheckGeometryDao;
 import it.volpini.vgi.dao.UserLocationDao;
+import it.volpini.vgi.domain.CheckGeometry;
 import it.volpini.vgi.domain.UserLocation;
 import it.volpini.vgi.domain.VgiUser;
 import it.volpini.vgi.exceptions.ElementNotFoundException;
+import it.volpini.vgi.exceptions.PointOutOfAreaException;
 import it.volpini.vgi.general.CostantiVgi;
 import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.utils.GeometryUtils;
@@ -25,6 +27,9 @@ public class UserLocationService {
 	
 	@Autowired
 	private UserLocationDao userLocationDao;
+	
+	@Autowired
+	private CheckGeometryDao checkGeomDao;
 	
 	@Autowired
 	private GeometryUtils geomUtils;
@@ -53,13 +58,21 @@ public class UserLocationService {
 		return userLocationDao.findByVgiUser_idAndLegenda_id(idUser, idLegenda);
 	}
 	
-	public Esito saveOrUpdateLocation(UserLocation location, Long idUser){
+	public Esito saveOrUpdateLocation(UserLocation location, Long idUser)
+			throws ElementNotFoundException, PointOutOfAreaException {
 		Point point = geomUtils.getPoint(location.getLongitude(), location.getLatitude());
 		point.setSRID(3857);
-		location.setLocation(point);
-		location.setVgiUser(new VgiUser(idUser));
-		saveOrUpdate(location);
-		return new Esito(CostantiVgi.DESCR_OK, true);
+		CheckGeometry polygon = checkGeomDao.findTop1().orElseThrow(
+				() -> new ElementNotFoundException("Errore: la geometria di validazione non è disponibile"));
+		if (!polygon.getGeometry().contains(point)) {
+			throw new PointOutOfAreaException(
+					"Il punto non è all'interno dell'area definita per questa versione dell'applicativo");
+		} else {
+			location.setLocation(point);
+			location.setVgiUser(new VgiUser(idUser));
+			saveOrUpdate(location);
+			return new Esito(CostantiVgi.DESCR_OK, true);
+		}
 	}
 	
 	public List<UserLocation> searchLocation(Optional<Integer> annoA, Optional<Integer> annoB, Optional<Long> idLegenda,

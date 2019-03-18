@@ -20,6 +20,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import it.volpini.vgi.domain.UserLocation;
 import it.volpini.vgi.exceptions.ElementNotFoundException;
+import it.volpini.vgi.exceptions.PointOutOfAreaException;
 import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.service.UserLocationService;
 import it.volpini.vgi.service.VgiUserService;
@@ -35,7 +36,7 @@ public class UserLocationRestController {
 	private VgiUserService userService;
 	
 	@PostMapping()
-	public Esito newLocation(@RequestBody @Valid UserLocation location){
+	public Esito newLocation(@RequestBody @Valid UserLocation location) throws ElementNotFoundException, PointOutOfAreaException{
 		Long idAuth=userService.getIdAuthenticatedUser();
 		return locationService.saveOrUpdateLocation(location, idAuth);
 	}
@@ -53,7 +54,7 @@ public class UserLocationRestController {
 	}
 	
 	@PatchMapping()
-	public Esito udpate(@RequestBody @Valid UserLocation location) {
+	public Esito udpate(@RequestBody @Valid UserLocation location) throws ElementNotFoundException, PointOutOfAreaException {
 		Long idAuth = userService.getIdAuthenticatedUser();
 		return locationService.saveOrUpdateLocation(location, idAuth);
 	}
