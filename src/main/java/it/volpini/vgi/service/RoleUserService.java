@@ -8,8 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.volpini.vgi.dao.RoleUserDao;
 import it.volpini.vgi.domain.RoleUser;
-import it.volpini.vgi.general.CostantiVgi;
-import it.volpini.vgi.general.Esito;
 
 @Service
 @Transactional
