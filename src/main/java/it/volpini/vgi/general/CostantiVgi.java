@@ -9,8 +9,11 @@ public class CostantiVgi {
 	public static final String DESCR_OK_RESULT_NULL="Nessun risultato";
 	public static final String DESCR_ERRORE="Operazione terminata con errori: ";
 	public static final String SECRET="12345667890";
+	public static final String CLAIM_SUBJECT = "subject";
 	public static final String LONGIN_ISSUE="login";
+	public static final String RESET_ISSUE="reset";
 	public static final String TOKEN_EXPIRED_KEY="Ex-Token";
+	public static final String AUTH_TOKEN_KEY = "X-Vgi";
 	
 
 }

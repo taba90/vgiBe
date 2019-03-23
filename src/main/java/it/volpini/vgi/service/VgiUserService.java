@@ -21,6 +21,7 @@ import it.volpini.vgi.domain.VgiUser;
 import it.volpini.vgi.exceptions.ElementNotFoundException;
 import it.volpini.vgi.general.CostantiVgi;
 import it.volpini.vgi.general.Esito;
+import it.volpini.vgi.security.JWTService;
 
 @Service
 @Transactional
@@ -36,6 +37,8 @@ public class VgiUserService {
 	private RoleUserService roleService;
 	@Autowired
     private BCryptPasswordEncoder pwdEncoder;
+	@Autowired
+	private JWTService tokenService;
 	
 	
 	public Esito saveUser(VgiUser user) {
@@ -102,6 +105,12 @@ public class VgiUserService {
 		delete(vgiUser.getId());
 		return new Esito(CostantiVgi.DESCR_OK, true);
 
+	}
+	
+	public Esito sendResetPasswordEmail(String username) {
+		VgiUser user = findByUsername(username);
+		String token = tokenService.createToken(user.getUsername(), CostantiVgi.CLAIM_SUBJECT, CostantiVgi.RESET_ISSUE);
+		return new Esito ("Email inviata con successo", true);
 	}
 
 }

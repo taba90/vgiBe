@@ -1,7 +1,6 @@
 package it.volpini.vgi.security;
 
 import java.io.IOException;
-import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,13 +15,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-
 import it.volpini.vgi.exceptions.VgiAuthenticationException;
 import it.volpini.vgi.general.CostantiVgi;
 import it.volpini.vgi.general.Esito;
-import it.volpini.vgi.security.LoginVgi;
 
 @Service
 @Transactional
@@ -30,6 +25,9 @@ public class AuthService {
 	
 	@Autowired
 	private AuthenticationManager authMan;
+	
+	@Autowired
+	private JWTService tokenService;
 	
 	private Authentication attemptAuthentication (LoginVgi login) {
 		
@@ -46,13 +44,9 @@ public class AuthService {
 	private void successfullAuthentication (HttpServletRequest req,
             HttpServletResponse res,
             Authentication auth) throws IOException, ServletException {
-        Algorithm algorithm = Algorithm.HMAC256(CostantiVgi.SECRET);
-        String token = JWT.create()
-                .withIssuer("login")
-                .withClaim("subject", auth.getName())
-                .withExpiresAt(new Date(System.currentTimeMillis() + (120 * 60 * 1000)))
-                .sign(algorithm);
-        res.addHeader("X-Vgi", token);
+		String token = tokenService.createToken(auth.getName(), CostantiVgi.CLAIM_SUBJECT, CostantiVgi.LONGIN_ISSUE);
+		res.addHeader(CostantiVgi.AUTH_TOKEN_KEY, token);
+        
     }
 	
 	public Esito authenticateUser(LoginVgi login, HttpServletRequest req, HttpServletResponse resp)
