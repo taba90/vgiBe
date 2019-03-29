@@ -36,7 +36,7 @@ public class UserLocationRestController {
 	private VgiUserService userService;
 	
 	@PostMapping()
-	public Esito newLocation(@RequestBody @Valid UserLocation location) throws ElementNotFoundException, PointOutOfAreaException{
+	public Esito newLocation(@RequestBody @Valid UserLocation location) throws ElementNotFoundException{
 		Long idAuth=userService.getIdAuthenticatedUser();
 		return locationService.saveOrUpdateLocation(location, idAuth);
 	}

@@ -59,14 +59,13 @@ public class UserLocationService {
 	}
 	
 	public Esito saveOrUpdateLocation(UserLocation location, Long idUser)
-			throws ElementNotFoundException, PointOutOfAreaException {
+			throws ElementNotFoundException {
 		Point point = geomUtils.getPoint(location.getLongitude(), location.getLatitude());
 		point.setSRID(3857);
 		CheckGeometry polygon = checkGeomDao.findTop1().orElseThrow(
 				() -> new ElementNotFoundException("Errore: la geometria di validazione non è disponibile"));
 		if (!polygon.getGeometry().contains(point)) {
-			throw new PointOutOfAreaException(
-					"Il punto non è all'interno dell'area definita per questa versione dell'applicativo");
+			return new Esito("Impossibile aggiungere un punto al di fuori dell'area definita per questa versione dell'applicativo", false);
 		} else {
 			location.setLocation(point);
 			location.setVgiUser(new VgiUser(idUser));
