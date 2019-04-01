@@ -66,7 +66,10 @@ public class UserLocationService {
 				() -> new ElementNotFoundException("Errore: la geometria di validazione non è disponibile"));
 		if (!polygon.getGeometry().contains(point)) {
 			return new Esito("Impossibile aggiungere un punto al di fuori dell'area definita per questa versione dell'applicativo", false);
-		} else {
+		} else if (!canAddPointsToLegenda(idUser, location.getLegenda().getId())) {
+			return new Esito("Il numero massimo di punti per questo campo legenda è stato già raggiunto", false);
+		}
+		else {
 			location.setLocation(point);
 			location.setVgiUser(new VgiUser(idUser));
 			saveOrUpdate(location);
@@ -100,6 +103,15 @@ public class UserLocationService {
 	public UserLocation getUserLocationById(Long idLocation) throws ElementNotFoundException {
 		
 		return findById(idLocation).orElseThrow(()->new ElementNotFoundException("L'elemento indicato non esiste"));
+	}
+	
+	public boolean canAddPointsToLegenda (Long idUser, Long idLegenda) {
+		if(userLocationDao.countByVgiUser_idAndLegenda_id(idUser, idLegenda).intValue()
+				>= CostantiVgi.max_point_legenda.intValue()) {
+			return false;
+		}else {
+			return true;
+		}
 	}
 	
 

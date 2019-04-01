@@ -19,5 +19,7 @@ public interface UserLocationDao extends JpaRepository<UserLocation, Long>, Cust
 	public List<UserLocation> findByVgiUser_idAndLegenda_id(Long idUser, Long idLegenda);
 	
 	public Optional<UserLocation> findTop1ByLegenda_id(Long idLegenda);
+	
+	public Integer countByVgiUser_idAndLegenda_id (Long idUser, Long idLegenda);
 
 }

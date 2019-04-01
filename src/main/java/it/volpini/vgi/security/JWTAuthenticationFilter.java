@@ -60,7 +60,7 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
             HttpServletResponse res,
             FilterChain chain,
             Authentication auth) throws IOException, ServletException {
-        Algorithm algorithm = Algorithm.HMAC256(CostantiVgi.SECRET);
+        Algorithm algorithm = Algorithm.HMAC256(CostantiVgi.secret);
         String token = JWT.create()
                 .withIssuer("login")
                 .withClaim("subject", auth.getName())
