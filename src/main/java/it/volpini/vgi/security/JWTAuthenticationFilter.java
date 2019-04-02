@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,11 +24,13 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.volpini.vgi.domain.VgiUser;
-import it.volpini.vgi.general.CostantiVgi;
 
 public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 	
     private Optional<AuthenticationManager> opAuthMan;
+    
+    @Autowired
+    private Environment env;
 	
     @Autowired
 	public JWTAuthenticationFilter(String url, AuthenticationManager authManager) {
@@ -60,7 +63,7 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
             HttpServletResponse res,
             FilterChain chain,
             Authentication auth) throws IOException, ServletException {
-        Algorithm algorithm = Algorithm.HMAC256(CostantiVgi.secret);
+        Algorithm algorithm = Algorithm.HMAC256(env.getProperty("vgi.secret"));
         String token = JWT.create()
                 .withIssuer("login")
                 .withClaim("subject", auth.getName())

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +17,6 @@ import it.volpini.vgi.domain.CheckGeometry;
 import it.volpini.vgi.domain.UserLocation;
 import it.volpini.vgi.domain.VgiUser;
 import it.volpini.vgi.exceptions.ElementNotFoundException;
-import it.volpini.vgi.exceptions.PointOutOfAreaException;
 import it.volpini.vgi.general.CostantiVgi;
 import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.utils.GeometryUtils;
@@ -24,6 +24,9 @@ import it.volpini.vgi.utils.GeometryUtils;
 @Service
 @Transactional
 public class UserLocationService {
+	
+	@Autowired
+	Environment env;
 	
 	@Autowired
 	private UserLocationDao userLocationDao;
@@ -107,7 +110,7 @@ public class UserLocationService {
 	
 	public boolean canAddPointsToLegenda (Long idUser, Long idLegenda) {
 		if(userLocationDao.countByVgiUser_idAndLegenda_id(idUser, idLegenda).intValue()
-				>= CostantiVgi.max_point_legenda.intValue()) {
+				>= new Integer(env.getProperty("vgi.max.point.per.legenda")).intValue()) {
 			return false;
 		}else {
 			return true;

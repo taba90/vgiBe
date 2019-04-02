@@ -4,9 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
 
 @Entity
 @Table(name="check_geometry")
@@ -16,12 +14,6 @@ public class CheckGeometry extends AbstractEntity{
 	private String codiceIstat;
 	
 	private String comune;
-	
-	@Column(name="shape_length")
-	private double length;
-	
-	@Column(name="shape_area")
-	private double area;
 	
 	@Column(name="geom")
 	private MultiPolygon geometry;
@@ -44,22 +36,6 @@ public class CheckGeometry extends AbstractEntity{
 
 	public void setComune(String comune) {
 		this.comune = comune;
-	}
-
-	public double getLength() {
-		return length;
-	}
-
-	public void setLength(double length) {
-		this.length = length;
-	}
-
-	public double getArea() {
-		return area;
-	}
-
-	public void setArea(double area) {
-		this.area = area;
 	}
 
 	public MultiPolygon getGeometry() {
