@@ -6,12 +6,14 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import it.volpini.vgi.dao.GhostUserDao;
+import it.volpini.vgi.dao.RoleUserDao;
 import it.volpini.vgi.dao.UserLocationDao;
 import it.volpini.vgi.dao.VgiUserDao;
 import it.volpini.vgi.domain.GhostUser;
@@ -24,7 +26,7 @@ import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.security.JWTService;
 
 @Service
-@Transactional
+@Transactional(noRollbackFor=AuthenticationException.class)
 public class VgiUserService {
 	
 	@Autowired
@@ -44,7 +46,7 @@ public class VgiUserService {
 	public Esito saveUser(VgiUser user) {
 		String pwdCrypted = pwdEncoder.encode(user.getPassword());
 		user.setPassword(pwdCrypted);
-		RoleUser role = roleService.findByRoleName(RoleUserService.ROLE_USER);
+		RoleUser role = roleService.findByRoleName(RoleUserDao.ROLE_USER);
 		if (user.getRuoli() != null) {
 			user.getRuoli().add(role);
 		} else {

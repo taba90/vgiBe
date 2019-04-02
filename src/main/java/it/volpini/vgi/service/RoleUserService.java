@@ -10,12 +10,8 @@ import it.volpini.vgi.dao.RoleUserDao;
 import it.volpini.vgi.domain.RoleUser;
 
 @Service
-@Transactional
+@Transactional(rollbackFor=Exception.class)
 public class RoleUserService {
-	
-	public static final String ROLE_USER="ROLE_USER";
-	
-	public static final String ROLE_ADMIN="ROLE_ADMIN";
 	
 	@Autowired
 	private RoleUserDao roleDao;
@@ -30,6 +26,14 @@ public class RoleUserService {
 	
 	public List<RoleUser> findByUserName(String username){
 		return findByUsername(username);
+	}
+	
+	public RoleUser saveRoleUser (RoleUser role) {
+		return roleDao.save(role);
+	}
+	
+	public List<RoleUser> findByRoleNameIn (List<String> roleNames){
+		return roleDao.findByRoleNameIn(roleNames);
 	}
 
 }

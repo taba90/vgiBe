@@ -22,7 +22,7 @@ import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.utils.GeometryUtils;
 
 @Service
-@Transactional
+@Transactional(rollbackFor=Exception.class)
 public class UserLocationService {
 	
 	@Autowired

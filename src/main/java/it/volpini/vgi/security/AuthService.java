@@ -64,7 +64,7 @@ public class AuthService {
 		} catch (ServletException sEx) {
 			throw new VgiAuthenticationException(sEx.getMessage());
 		} catch (AuthenticationException authEx) {
-			throw new VgiAuthenticationException(authEx.getMessage());
+			throw new VgiAuthenticationException("Credenziali di accesso errate");
 		}
 	}
 

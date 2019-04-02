@@ -51,9 +51,16 @@ public class VgiUser extends AbstractEntity{
 	public VgiUser(Long id) {
 		this.id=id;
 	}
+	
 	public VgiUser () {
 		
 	}
+	
+	public VgiUser (String username, String password) {
+		this.username = username;
+		this.password = password;
+	}
+	
 	public Long getId() {
 		return id;
 	}

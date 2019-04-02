@@ -1,6 +1,8 @@
 package it.volpini.vgi.exceptions;
 
-public class VgiAuthenticationException extends Exception{
+import org.springframework.security.core.AuthenticationException;
+
+public class VgiAuthenticationException extends AuthenticationException{
 	
 	/**
 	 * 
@@ -10,7 +12,7 @@ public class VgiAuthenticationException extends Exception{
 	private Throwable originalException;
 	
 	public VgiAuthenticationException () {
-		
+		super("Exception");
 	}
 	
 	public VgiAuthenticationException (String message) {

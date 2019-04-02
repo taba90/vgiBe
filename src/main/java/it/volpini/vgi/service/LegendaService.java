@@ -14,7 +14,7 @@ import it.volpini.vgi.exceptions.ElementNotFoundException;
 import it.volpini.vgi.general.Esito;
 
 @Service
-@Transactional
+@Transactional(rollbackFor=Exception.class)
 public class LegendaService {
 
 	@Autowired

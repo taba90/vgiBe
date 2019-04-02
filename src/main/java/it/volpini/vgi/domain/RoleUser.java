@@ -11,17 +11,23 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="ruoli")
-public class RoleUser extends AbstractEntity{
-	
+@Table(name = "ruoli")
+public class RoleUser extends AbstractEntity {
+
 	private String roleName;
-	
-	@ManyToMany(fetch=FetchType.LAZY)
-	@JoinTable(
-			   name="Users_Roles",
-			   joinColumns=@JoinColumn(name="Role_id", referencedColumnName="long_id"),
-			   inverseJoinColumns=@JoinColumn(name="User_id", referencedColumnName="long_id"))
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "Users_Roles", joinColumns = @JoinColumn(name = "Role_id", referencedColumnName = "long_id"), inverseJoinColumns = @JoinColumn(name = "User_id", referencedColumnName = "long_id"))
 	private List<VgiUser> utenti;
+
+	public RoleUser() {
+
+	}
+
+	
+	public RoleUser(String roleName) {
+		this.roleName = roleName;
+	}
 
 	public Long getId() {
 		return id;
@@ -46,14 +52,12 @@ public class RoleUser extends AbstractEntity{
 	public void setUtenti(List<VgiUser> utenti) {
 		this.utenti = utenti;
 	}
-	
+
 	public void addUtente(VgiUser utente) {
-		if(this.utenti ==null) {
-			this.utenti= new ArrayList<VgiUser>();
+		if (this.utenti == null) {
+			this.utenti = new ArrayList<VgiUser>();
 		}
 		this.utenti.add(utente);
 	}
-	
-	
 
 }
