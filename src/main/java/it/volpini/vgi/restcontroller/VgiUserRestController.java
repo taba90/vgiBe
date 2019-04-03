@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.volpini.vgi.domain.RoleUser;
@@ -27,6 +29,7 @@ import it.volpini.vgi.service.RoleUserService;
 import it.volpini.vgi.service.VgiUserService;
 
 @RestController
+@RequestMapping("/user")
 @CrossOrigin("*")
 public class VgiUserRestController {
 
@@ -71,9 +74,14 @@ public class VgiUserRestController {
 		return authService.authenticateUser(loginVgi, req, resp);
 	}
 	
-	@GetMapping("/all")
-	public List<VgiUser> getUtenti(){
-		return userService.findAll();
+	@GetMapping("/all/{page}")
+	public List<VgiUser> getUtenti(@PathVariable Integer page){
+		return userService.getPaginedUsers(page.intValue());
+	}
+	
+	@GetMapping("/count")
+	public Long countUtenti(){
+		return userService.countAllUsers();
 	}
 }
 

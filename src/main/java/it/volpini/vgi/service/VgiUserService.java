@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -84,6 +88,12 @@ public class VgiUserService {
 		return vgiUserDao.findAll();
 	}
 	
+	public List<VgiUser> getPaginedUsers (int page){
+		Pageable pageable = getPageable (page, 5);
+		Page<VgiUser> usersPage = vgiUserDao.findAll(pageable);
+		return usersPage.getContent();
+	}
+	
 	public void delete(Long id) {
 		vgiUserDao.deleteById(id);
 	}
@@ -116,6 +126,14 @@ public class VgiUserService {
 		VgiUser user = findByUsername(username);
 		String token = tokenService.createToken(user.getUsername(), CostantiVgi.CLAIM_SUBJECT, CostantiVgi.RESET_ISSUE);
 		return new Esito ("Email inviata con successo", true);
+	}
+	
+	public Long countAllUsers() {
+		return vgiUserDao.count();
+	}
+	
+	public Pageable getPageable (int page, int maxResult) {
+		return PageRequest.of(page, maxResult, new Sort(Sort.Direction.ASC, "username"));
 	}
 
 }
