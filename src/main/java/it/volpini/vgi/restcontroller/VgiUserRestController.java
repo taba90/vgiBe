@@ -70,4 +70,10 @@ public class VgiUserRestController {
 	public Esito login (@RequestBody LoginVgi loginVgi, HttpServletRequest req, HttpServletResponse resp) throws VgiAuthenticationException{
 		return authService.authenticateUser(loginVgi, req, resp);
 	}
+	
+	@GetMapping("/all")
+	public List<VgiUser> getUtenti(){
+		return userService.findAll();
+	}
 }
+

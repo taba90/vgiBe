@@ -12,13 +12,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import it.volpini.vgi.dao.RoleUserDao;
 import it.volpini.vgi.security.JWTAuthorizationFilter;
 import it.volpini.vgi.security.VgiUserDetailsService;
 
@@ -34,11 +34,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
         http.cors().and().csrf().disable().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/**").authenticated()
                 .antMatchers("/register").anonymous()
-                .antMatchers("/legenda/findAll").permitAll()
-                .antMatchers("/location/new").permitAll()
-                .antMatchers("/location/user").permitAll()
+                .antMatchers("/roles").authenticated()
+                .antMatchers("/legenda/findAll").authenticated()
+                .antMatchers("/location/**").authenticated()
+                .antMatchers("/location/user").authenticated()
+                .antMatchers("/**", "/legenda/**").hasRole(RoleUserDao.ROLE_ADMIN)
                 .antMatchers(HttpMethod.POST, "/login").anonymous()
                 .and().addFilterAfter(new JWTAuthorizationFilter(authenticationManager()), SecurityContextPersistenceFilter.class)
                 .logout().logoutUrl("/logout").logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.ACCEPTED)).permitAll();

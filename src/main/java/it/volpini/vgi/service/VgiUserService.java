@@ -87,9 +87,12 @@ public class VgiUserService {
 	public void delete(Long id) {
 		vgiUserDao.deleteById(id);
 	}
+	public Esito selfDeleteUser () throws ElementNotFoundException {
+		return deleteUserAndCreateGhost(getIdAuthenticatedUser());
+	}
 	
-	public Esito selfDeleteUser() throws ElementNotFoundException {
-		VgiUser vgiUser = findById(getIdAuthenticatedUser()).orElseThrow(
+	public Esito deleteUserAndCreateGhost(Long idUser) throws ElementNotFoundException {
+		VgiUser vgiUser = findById(idUser).orElseThrow(
 				()-> new ElementNotFoundException("Non ho trovato l'elemento indicato"));
 		GhostUser ghost = new GhostUser(vgiUser);
 		ghostDao.save(ghost);
