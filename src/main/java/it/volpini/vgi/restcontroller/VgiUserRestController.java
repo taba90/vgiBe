@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.volpini.vgi.domain.RoleUser;
@@ -39,18 +40,14 @@ public class VgiUserRestController {
 	@Autowired
 	private RoleUserService roleService;
 	
-	@Autowired
-	private AuthService authService;
-	
-	
-	@PostMapping("/register")
-	public Esito registerUser(@RequestBody @Valid VgiUser user) {
-		return userService.saveUser(user);
-	}
-	
 	@DeleteMapping("/self")
 	public Esito deleteSelfUser() throws ElementNotFoundException{
 		return userService.selfDeleteUser();
+	}
+	
+	@DeleteMapping("/{idUser}")
+	public Esito deleteUser(@PathVariable Long idUser) throws ElementNotFoundException{
+		return userService.deleteUserAndCreateGhost(idUser);
 	}
 	
 	@GetMapping("/self")
@@ -65,18 +62,15 @@ public class VgiUserRestController {
 	}
 	
 	@GetMapping("/roles")
-	public List<RoleUser> getRuoliUtente(Authentication auth){
-		return roleService.findByUserName(auth.getName());
+	public List<RoleUser> getRuoliUtente(){
+		String username = userService.getNameAuthenticatedUser();
+		return roleService.findByUserName(username);
 	}
 	
-	@PostMapping("/login")
-	public Esito login (@RequestBody LoginVgi loginVgi, HttpServletRequest req, HttpServletResponse resp) throws VgiAuthenticationException{
-		return authService.authenticateUser(loginVgi, req, resp);
-	}
-	
-	@GetMapping("/all/{page}")
-	public List<VgiUser> getUtenti(@PathVariable Integer page){
-		return userService.getPaginedUsers(page.intValue());
+	@GetMapping("/all")
+	public List<VgiUser> getUtenti(@RequestParam (value="page", required = true) Integer page, 
+			@RequestParam (value="resultPerPage", required=false) Integer resultPerPage){
+		return userService.getPaginedUsers(page.intValue(), resultPerPage);
 	}
 	
 	@GetMapping("/count")

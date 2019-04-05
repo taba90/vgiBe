@@ -85,7 +85,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 		Set<GrantedAuthority> authorities = new HashSet<>();
 		if (u.getRuoli() != null && u.getRuoli().size()>0) {
 			u.getRuoli().forEach(r -> {
-				authorities.add(new SimpleGrantedAuthority(r.toString()));
+				authorities.add(new SimpleGrantedAuthority(r.getRoleName()));
 			});
 			authtoken = new UsernamePasswordAuthenticationToken(u.getUsername(), null, authorities);
 			return authtoken;

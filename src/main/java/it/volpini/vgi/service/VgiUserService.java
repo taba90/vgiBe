@@ -67,6 +67,11 @@ public class VgiUserService {
         return findByUsername(auth.getName()).getId();
 	}
 	
+	public String getNameAuthenticatedUser(){
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getName();
+	}
+	
 	public VgiUser save(VgiUser vgiUser) {
 		return vgiUserDao.save(vgiUser);
 	}
@@ -88,8 +93,8 @@ public class VgiUserService {
 		return vgiUserDao.findAll();
 	}
 	
-	public List<VgiUser> getPaginedUsers (int page){
-		Pageable pageable = getPageable (page, 5);
+	public List<VgiUser> getPaginedUsers (int page, Integer resultPerPage){
+		Pageable pageable = getPageable (page, resultPerPage);
 		Page<VgiUser> usersPage = vgiUserDao.findAll(pageable);
 		return usersPage.getContent();
 	}
@@ -132,8 +137,11 @@ public class VgiUserService {
 		return vgiUserDao.count();
 	}
 	
-	public Pageable getPageable (int page, int maxResult) {
-		return PageRequest.of(page, maxResult, new Sort(Sort.Direction.ASC, "username"));
+	public Pageable getPageable (int page, Integer resultPerPage) {
+		if(resultPerPage == null) {
+			resultPerPage = 5;
+		}
+		return PageRequest.of(page, resultPerPage, new Sort(Sort.Direction.ASC, "username"));
 	}
 
 }

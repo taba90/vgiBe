@@ -12,8 +12,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -31,23 +31,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
     
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable().sessionManagement()
+        http
+        .addFilterBefore(new JWTAuthorizationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+        .cors().and().csrf().disable().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/**").authenticated()
-                .antMatchers("/register").anonymous()
+                .antMatchers("/register").permitAll()
+                .antMatchers("/login").permitAll()
+                .antMatchers("/user/self").authenticated()
+                .antMatchers("/user/roles").authenticated()
                 .antMatchers("/legenda/findAll").authenticated()
-                .antMatchers("/location/**").authenticated()
                 .antMatchers("/location/user").authenticated()
-                .antMatchers(HttpMethod.GET,"/user/self").authenticated()
-                .antMatchers(HttpMethod.DELETE, "/user/self").hasAnyRole(RoleUserDao.ROLE_ADMIN, RoleUserDao.ROLE_USER)
-                .antMatchers("/user/roles").hasAnyRole(RoleUserDao.ROLE_ADMIN, RoleUserDao.ROLE_USER)
-                // .antMatchers("/user/count").hasRole(RoleUserDao.ROLE_ADMIN)
-                .antMatchers(HttpMethod.POST, "/user/login").anonymous()
-                .antMatchers("/legenda/**").hasRole(RoleUserDao.ROLE_ADMIN)
-                .antMatchers("/utente/**").hasRole(RoleUserDao.ROLE_ADMIN)
-                .and().addFilterAfter(new JWTAuthorizationFilter(authenticationManager()), SecurityContextPersistenceFilter.class)
-                .logout().logoutUrl("/logout").logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.ACCEPTED)).permitAll();
+                .antMatchers("/legenda/**").hasAuthority(RoleUserDao.ROLE_ADMIN)//hasAuthority(RoleUserDao.ROLE_ADMIN)
+                .antMatchers("/user/**").hasAuthority(RoleUserDao.ROLE_ADMIN)
+                .antMatchers("/location/**").authenticated()
+                 // .anyRequest().authenticated()
+                .and().logout().logoutUrl("/logout").logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.ACCEPTED)).permitAll();
 
     }
 
