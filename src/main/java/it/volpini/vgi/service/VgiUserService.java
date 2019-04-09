@@ -93,9 +93,9 @@ public class VgiUserService {
 		return vgiUserDao.findAll();
 	}
 	
-	public List<VgiUser> getPaginedUsers (int page, Integer resultPerPage){
+	public List<VgiUser> getPaginedUsersNoAdmin (int page, Integer resultPerPage){
 		Pageable pageable = getPageable (page, resultPerPage);
-		Page<VgiUser> usersPage = vgiUserDao.findAll(pageable);
+		Page<VgiUser> usersPage = vgiUserDao.findAllNotRole(RoleUserDao.ROLE_ADMIN, pageable);
 		return usersPage.getContent();
 	}
 	
@@ -133,8 +133,8 @@ public class VgiUserService {
 		return new Esito ("Email inviata con successo", true);
 	}
 	
-	public Long countAllUsers() {
-		return vgiUserDao.count();
+	public Long countAllUsersNoAdmin() {
+		return vgiUserDao.countNotRole(RoleUserDao.ROLE_ADMIN);
 	}
 	
 	public Pageable getPageable (int page, Integer resultPerPage) {
@@ -142,6 +142,17 @@ public class VgiUserService {
 			resultPerPage = 5;
 		}
 		return PageRequest.of(page, resultPerPage, new Sort(Sort.Direction.ASC, "username"));
+	}
+	
+	public boolean checkIfAdmin (VgiUser u) {
+		if(u.getRuoli()!=null) {
+		for(RoleUser r : u.getRuoli()) {
+			if (r.getRoleName().equals(RoleUserDao.ROLE_ADMIN)) {
+				return true;
+			}
+		}
+		}
+		return false;
 	}
 
 }

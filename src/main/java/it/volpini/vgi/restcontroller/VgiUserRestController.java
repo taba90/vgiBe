@@ -70,12 +70,12 @@ public class VgiUserRestController {
 	@GetMapping("/all")
 	public List<VgiUser> getUtenti(@RequestParam (value="page", required = true) Integer page, 
 			@RequestParam (value="resultPerPage", required=false) Integer resultPerPage){
-		return userService.getPaginedUsers(page.intValue(), resultPerPage);
+		return userService.getPaginedUsersNoAdmin(page.intValue(), resultPerPage);
 	}
 	
 	@GetMapping("/count")
 	public Long countUtenti(){
-		return userService.countAllUsers();
+		return userService.countAllUsersNoAdmin();
 	}
 }
 
