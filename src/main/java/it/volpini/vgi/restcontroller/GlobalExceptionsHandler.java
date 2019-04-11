@@ -9,9 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-
 
 import it.volpini.vgi.exceptions.ElementNotFoundException;
 import it.volpini.vgi.exceptions.PointOutOfAreaException;
@@ -20,7 +17,6 @@ import it.volpini.vgi.general.Esito;
 
 
 @RestControllerAdvice
-@EnableWebMvc
 public class GlobalExceptionsHandler {
 	
 	@ExceptionHandler(ElementNotFoundException.class)
