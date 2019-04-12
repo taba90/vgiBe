@@ -24,10 +24,12 @@ public class MailService {
         emailSender.send(message);
     }
     
-    public String getTextResetPwdMail (String token) {
+    public String getTextResetPwdMail (String token, String username) {
     	StringBuffer textBuf = new StringBuffer("Servizio di reset della password ");
     	textBuf.append("\n\r");
     	textBuf.append("E' stata mandata una richiesta per il rinnovo della password di questo account.");
+    	textBuf.append("\n\r");
+    	textBuf.append("Il tuo nome utente è: ").append(username);
     	textBuf.append("\n\r");
     	textBuf.append("Se la richiesta è partita da te clicca nel link di seguito, altrimenti ignora la mail.");
         textBuf.append("\n\r");
@@ -35,6 +37,7 @@ public class MailService {
         .append("/login?t=").append(token);
         textBuf.append("\n\r");
         textBuf.append("Il link rimarrà valido per un'ora.");
+        textBuf.append("\n\r");
         textBuf.append("Saluti, Erdkunder Staff");
         return textBuf.toString();
     }

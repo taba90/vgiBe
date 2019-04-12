@@ -48,7 +48,7 @@ public class LoginRestController {
 	}
 	
 	@PatchMapping("/resetPassword")
-	public VgiUser resetPassword (@RequestParam("t") String token, @RequestBody LoginVgi login) throws ElementNotFoundException {
+	public Esito resetPassword (@RequestParam("t") String token, @RequestBody LoginVgi login) throws ElementNotFoundException {
 		return userService.resetPasswordUser(token, login.getPassword());
 	}
 

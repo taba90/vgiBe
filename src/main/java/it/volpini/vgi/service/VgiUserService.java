@@ -143,18 +143,18 @@ public class VgiUserService {
     	VgiUser user = findByEmail(email);
 		String token = tokenService.createToken(user.getUsername(), 
 				CostantiVgi.CLAIM_SUBJECT, CostantiVgi.RESET_ISSUE);
-		String text = mailService.getTextResetPwdMail(token);
+		String text = mailService.getTextResetPwdMail(token, user.getUsername());
 		mailService.sendSimpleMessage(user.getEmail(), "Password reset Erdkunder", text);
 		return new Esito ("Abbiamo inviato una email al tuo indirizzo di posta per effettuare il reset della password", true);
 	}
 	
-	public VgiUser resetPasswordUser (String token, String password) {
-		String username = tokenService.verifyToken(token, CostantiVgi.CLAIM_SUBJECT, 
-				CostantiVgi.RESET_ISSUE);
+	public Esito resetPasswordUser (String token, String password) {
+		String username = tokenService.verifyToken(token, 
+				CostantiVgi.RESET_ISSUE, CostantiVgi.CLAIM_SUBJECT);
 		String pwdCrypted = pwdEncoder.encode(password);
 		VgiUser user = findByUsername(username);
 		user.setPassword(pwdCrypted);
-		return save(user);
+		return new Esito ("Password modificata con successo", true);
 	}
 	
 	public Pageable getPageable (int page, Integer resultPerPage) {
