@@ -65,9 +65,8 @@ public class UserLocationService {
 			throws ElementNotFoundException {
 		Point point = geomUtils.getPoint(location.getLongitude(), location.getLatitude());
 		point.setSRID(3857);
-		CheckGeometry polygon = checkGeomDao.findTop1().orElseThrow(
-				() -> new ElementNotFoundException("Errore: la geometria di validazione non è disponibile"));
-		if (!polygon.getGeometry().contains(point)) {
+		Optional<CheckGeometry> polygon = checkGeomDao.findTop1();
+		if (polygon.isPresent() && !polygon.get().getGeometry().contains(point)) {
 			return new Esito("Impossibile aggiungere un punto al di fuori dell'area definita per questa versione dell'applicativo", false);
 		} else if (!canAddPointsToLegenda(idUser, location.getLegenda().getId())) {
 			return new Esito("Il numero massimo di punti per questo campo legenda è stato già raggiunto", false);
