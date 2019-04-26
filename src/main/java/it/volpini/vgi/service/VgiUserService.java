@@ -53,13 +53,15 @@ public class VgiUserService {
 	public Esito saveUser(VgiUser user) {
 		String pwdCrypted = pwdEncoder.encode(user.getPassword());
 		user.setPassword(pwdCrypted);
-		RoleUser role = roleService.findByRoleName(RoleUserDao.ROLE_USER);
-		if (user.getRuoli() != null) {
-			user.getRuoli().add(role);
-		} else {
-			List<RoleUser> ruoli = new ArrayList<RoleUser>();
-			ruoli.add(role);
-			user.setRuoli(ruoli);
+		if(user.getRuoli()== null || user.getRuoli().size()<1) {
+			RoleUser role = roleService.findByRoleName(RoleUserDao.ROLE_USER);
+			if (user.getRuoli() != null) {
+				user.getRuoli().add(role);
+			} else {
+				List<RoleUser> ruoli = new ArrayList<RoleUser>();
+				ruoli.add(role);
+				user.setRuoli(ruoli);
+			}
 		}
 		save(user);
 		return new Esito(CostantiVgi.DESCR_OK, true);

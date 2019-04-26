@@ -20,6 +20,10 @@ public class RoleUserService {
 		return roleDao.findByRoleName(roleName);
 	}
 	
+	public List<RoleUser> findAll() {
+		return roleDao.findAll();
+	}
+	
 	public List<RoleUser> findByUsername(String username){
 		return roleDao.findByUtenti_Username(username);
 	}
