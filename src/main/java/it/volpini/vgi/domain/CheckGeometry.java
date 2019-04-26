@@ -9,33 +9,13 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 @Entity
 @Table(name="check_geometry")
 public class CheckGeometry extends AbstractEntity{
-		
-	@Column(name="codice_comune")
-	private String codiceIstat;
 	
-	private String comune;
 	
 	@Column(name="geom")
 	private MultiPolygon geometry;
 	
 	public CheckGeometry () {
 		
-	}
-
-	public String getCodiceIstat() {
-		return codiceIstat;
-	}
-
-	public void setCodiceIstat(String codiceIstat) {
-		this.codiceIstat = codiceIstat;
-	}
-
-	public String getComune() {
-		return comune;
-	}
-
-	public void setComune(String comune) {
-		this.comune = comune;
 	}
 
 	public MultiPolygon getGeometry() {
