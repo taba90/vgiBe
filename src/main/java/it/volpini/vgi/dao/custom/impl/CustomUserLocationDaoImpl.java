@@ -35,8 +35,6 @@ public class CustomUserLocationDaoImpl implements CustomUserLocationDao{
 			if(anni2.isPresent()) {
 				if(and) {
 					strquery.append(" and ");
-				} else {
-					strquery.append(" where " );
 				}
 				strquery.append(" u.anni <= :anni2 ");
 				and=true;
@@ -52,8 +50,6 @@ public class CustomUserLocationDaoImpl implements CustomUserLocationDao{
 			if(anni2.isPresent()) {
 				if(and) {
 					strquery.append(" and ");
-				} else {
-					strquery.append(" where " );
 				}
 				strquery.append(" gu.anni <= :anni2 ");
 				and=true;
