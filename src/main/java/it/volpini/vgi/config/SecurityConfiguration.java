@@ -3,7 +3,6 @@ package it.volpini.vgi.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -45,6 +44,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
                 .antMatchers("/user/roles").authenticated()
                 .antMatchers("/legenda/findAll").authenticated()
                 .antMatchers("/location/user").authenticated()
+                .antMatchers("/location/search").authenticated()
                 .antMatchers("/legenda/**").hasAuthority(RoleUserDao.ROLE_ADMIN)//hasAuthority(RoleUserDao.ROLE_ADMIN)
                 .antMatchers("/user/**").hasAuthority(RoleUserDao.ROLE_ADMIN)
                 .antMatchers("/location/**").authenticated()

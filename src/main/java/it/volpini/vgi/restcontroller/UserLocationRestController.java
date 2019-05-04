@@ -42,8 +42,8 @@ public class UserLocationRestController {
 	}
 	
 	@GetMapping("/search")
-	public List<UserLocation> search(@RequestParam(value="annoA", required=false) Integer annoA, 
-			@RequestParam(value="annoB", required=false) Integer annoB, 
+	public List<UserLocation> search(@RequestParam(value="annoDa", required=false) Integer annoA, 
+			@RequestParam(value="annoA", required=false) Integer annoB, 
 			@RequestParam(value="idLegenda", required=false) Long idLegenda, 
 			@RequestParam(value="geom", required=false) Geometry geom){
 		Optional<Integer> opAnnoA=Optional.ofNullable(annoA);
