@@ -9,7 +9,7 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 import it.volpini.vgi.dao.custom.CustomUserLocationDao;
 import it.volpini.vgi.domain.UserLocation;

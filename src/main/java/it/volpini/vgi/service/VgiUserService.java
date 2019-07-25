@@ -28,7 +28,6 @@ import it.volpini.vgi.exceptions.ElementNotFoundException;
 import it.volpini.vgi.general.CostantiVgi;
 import it.volpini.vgi.general.Esito;
 import it.volpini.vgi.security.JWTService;
-import it.volpini.vgi.utils.MailService;
 
 @Service
 @Transactional(noRollbackFor=AuthenticationException.class)

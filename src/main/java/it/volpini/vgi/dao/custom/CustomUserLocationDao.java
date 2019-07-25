@@ -4,7 +4,7 @@ package it.volpini.vgi.dao.custom;
 import java.util.List;
 import java.util.Optional;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 import it.volpini.vgi.domain.UserLocation;
 
