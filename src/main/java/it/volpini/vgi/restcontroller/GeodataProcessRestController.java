@@ -26,7 +26,7 @@ public class GeodataProcessRestController {
 			@RequestParam(value="width", required=false) Integer width,
 			@RequestParam(value="height", required=false) Integer height,
 			@RequestParam(value="radius", required=false) Integer kernelRadius,
-			@RequestParam(value="pixelPerCell") Integer pixelPerCell) throws Exception {
+			@RequestParam(value="pixelPerCell", required=false) Integer pixelPerCell) throws Exception {
 		return process.generateHeathMap(Optional.ofNullable(annoA), Optional.ofNullable(annoB), Optional.ofNullable(idLegenda), 
 				Optional.ofNullable(geom), Optional.ofNullable(width), Optional.ofNullable(height), Optional.ofNullable(kernelRadius), 
 				Optional.ofNullable(pixelPerCell));
